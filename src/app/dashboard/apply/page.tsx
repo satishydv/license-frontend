@@ -69,6 +69,7 @@ const DrivingLicenseApplicationForm = () => {
     expiryDate: '',
     coverClass: '',
     amount: '',
+    payAmount: '',
     modeOfPayment: ''
   })
 
@@ -78,6 +79,16 @@ const DrivingLicenseApplicationForm = () => {
   const [dragActiveReceipt, setDragActiveReceipt] = useState(false)
   const [cities, setCities] = useState<string[]>([])
   const [loadingCities, setLoadingCities] = useState(false)
+
+  // simple toast state
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  useEffect(() => {
+    if (!showToast) return
+    const t = setTimeout(() => setShowToast(false), 3000)
+    return () => clearTimeout(t)
+  }, [showToast])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -186,6 +197,7 @@ const DrivingLicenseApplicationForm = () => {
     payload.append('expiry_date', formData.expiryDate)
     payload.append('cover_class', formData.coverClass)
     payload.append('amount', formData.amount)
+    payload.append('pay_amount', formData.payAmount)
     payload.append('mode_of_payment', formData.modeOfPayment)
     if (uploadedFile) payload.append('license_attachment', uploadedFile)
     if (paymentReceiptFile) payload.append('payment_receipt', paymentReceiptFile)
@@ -196,11 +208,36 @@ const DrivingLicenseApplicationForm = () => {
       body: payload
     })
     if (!res.ok) {
-      console.error('Failed to submit application')
+      setToastMessage('Failed to submit application')
+      setShowToast(true)
       return
     }
     const data = await res.json()
-    console.log('Application saved', data)
+    setToastMessage('Application submitted successfully')
+    setShowToast(true)
+
+    // reset form for a fresh start
+    setFormData({
+      name: '',
+      fatherName: '',
+      contactNo: '',
+      dob: '',
+      bloodGroup: '',
+      state: '',
+      city: '',
+      licenseType: '',
+      applicationNo: '',
+      licenseNo: '',
+      issueDate: '',
+      expiryDate: '',
+      coverClass: '',
+      amount: '',
+      payAmount: '',
+      modeOfPayment: ''
+    })
+    setUploadedFile(null)
+    setPaymentReceiptFile(null)
+    setCities([])
   }
 
  
@@ -245,6 +282,7 @@ const DrivingLicenseApplicationForm = () => {
                 Personal Details
               </h2>
               
+              {/* Row 1: two columns */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name *</Label>
@@ -269,7 +307,10 @@ const DrivingLicenseApplicationForm = () => {
                     required
                   />
                 </div>
+              </div>
 
+              {/* Row 2: three columns */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="contactNo">Contact Number *</Label>
                   <Input
@@ -324,7 +365,7 @@ const DrivingLicenseApplicationForm = () => {
                 <div className="space-y-2">
                   <Label htmlFor="state">State *</Label>
                   <Select value={formData.state} onValueChange={handleStateChange}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select your state" />
                     </SelectTrigger>
                     <SelectContent>
@@ -344,7 +385,7 @@ const DrivingLicenseApplicationForm = () => {
                     onValueChange={(value) => handleInputChange('city', value)}
                     disabled={!formData.state || loadingCities}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder={
                         !formData.state 
                           ? "Select state first" 
@@ -373,19 +414,33 @@ const DrivingLicenseApplicationForm = () => {
               
               
 
-              <div className="space-y-2">
-                <Label htmlFor="applicationNo">Application Number *</Label>
-                <Input
-                  id="applicationNo"
-                  type="text"
-                  placeholder="Enter application number"
-                  value={formData.applicationNo}
-                  onChange={(e) => handleInputChange('applicationNo', e.target.value)}
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="applicationNo">Application Number *</Label>
+                  <Input
+                    id="applicationNo"
+                    type="text"
+                    placeholder="Enter application number"
+                    value={formData.applicationNo}
+                    onChange={(e) => handleInputChange('applicationNo', e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="coverClass">Cover/Class *</Label>
+                  <Input
+                    id="coverClass"
+                    type="text"
+                    placeholder="Enter cover/class"
+                    value={formData.coverClass}
+                    onChange={(e) => handleInputChange('coverClass', e.target.value)}
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="licenseNo">License Number *</Label>
                   <Input
@@ -419,25 +474,13 @@ const DrivingLicenseApplicationForm = () => {
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="coverClass">Cover/Class *</Label>
-                  <Input
-                    id="coverClass"
-                    type="text"
-                    placeholder="Enter cover/class"
-                    value={formData.coverClass}
-                    onChange={(e) => handleInputChange('coverClass', e.target.value)}
-                    required
-                  />
-                </div>
               </div>
             </div>
 
             {/* File Upload Section */}
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
-                Upload Your File
+                Upload Your Attachment
               </h2>
               
               <div
@@ -494,7 +537,7 @@ const DrivingLicenseApplicationForm = () => {
                 Payment Information
               </h2>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="amount">Amount *</Label>
                   <Input
@@ -503,6 +546,18 @@ const DrivingLicenseApplicationForm = () => {
                     placeholder="Enter amount"
                     value={formData.amount}
                     onChange={(e) => handleInputChange('amount', e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="payAmount">Pay Amount *</Label>
+                  <Input
+                    id="payAmount"
+                    type="number"
+                    placeholder="Enter pay amount"
+                    value={formData.payAmount}
+                    onChange={(e) => handleInputChange('payAmount', e.target.value)}
                     required
                   />
                 </div>
@@ -581,6 +636,15 @@ const DrivingLicenseApplicationForm = () => {
           </form>
         </div>
       </div>
+
+      {/* Toast */}
+      {showToast && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <div className="bg-gray-900 text-white px-4 py-3 rounded shadow-lg">
+            <span className="text-sm">{toastMessage}</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

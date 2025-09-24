@@ -9,6 +9,10 @@ import {
   Group,
   LogOut,
   File,
+  CardSim,
+  Package,
+  CircleCheck,
+  Gauge,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
@@ -68,6 +72,30 @@ const items = [
     title: "Apply",
     url: "/dashboard/apply",
     icon: File,
+    permission: null, // No permission required for search
+  },
+  {
+    title: "Light to Heavy",
+    url: "/dashboard/light-heavy",
+    icon: CardSim,
+    permission: null, // No permission required for search
+  },
+  {
+    title: "Direct Heavy",
+    url: "/dashboard/direct-heavy",
+    icon: Package,
+    permission: null, // No permission required for search
+  },
+  {
+    title: "Light License or Renewal",
+    url: "/dashboard/light-renewal",
+    icon: Gauge,
+    permission: null, // No permission required for search
+  },
+  {
+    title: "Correction",
+    url: "/dashboard/correction",
+    icon: CircleCheck,
     permission: null, // No permission required for search
   },
   {
