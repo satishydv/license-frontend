@@ -17,8 +17,8 @@ import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
-  const { theme, setTheme } = useTheme();
-  const { toggleSidebar } = useSidebar();
+  const { setTheme } = useTheme();
+  const {} = useSidebar();
   const { logout, user } = useAuth();
 
   const handleLogout = async () => {

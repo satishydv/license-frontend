@@ -60,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const register = async (name: string, email: string, password: string, confirmPassword: string) => {
     try {
-      const response = await apiService.register({
+      await apiService.register({
         name,
         email,
         password,

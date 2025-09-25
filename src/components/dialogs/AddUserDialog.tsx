@@ -111,9 +111,9 @@ export default function AddUserDialog({ isOpen, onClose }: AddUserDialogProps) {
       });
       setErrors({});
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to create user:', error);
-      setErrors({ submit: error.message || 'Failed to create user' });
+      setErrors({ submit: error instanceof Error ? error.message : 'Failed to create user' });
     } finally {
       setIsLoading(false);
     }

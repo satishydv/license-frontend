@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { User } from "@/types/user"
-import { useUsers } from "@/contexts/UserContext"
 
 export const createUserColumns = (onEdit?: (user: User) => void, onDelete?: (user: User) => void): ColumnDef<User>[] => [
   {

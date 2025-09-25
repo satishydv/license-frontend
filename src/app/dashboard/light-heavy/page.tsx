@@ -4,6 +4,7 @@ import { DataTable } from '@/components/tables/data-table'
 import { createApplicationColumns } from '@/components/tables/application-columns'
 import EditApplicationDialog from '@/components/dialogs/EditApplicationDialog'
 import ViewApplicationDialog from '@/components/dialogs/ViewApplicationDialog'
+import { apiService } from '@/lib/api'
 
 type Application = {
   id: number
@@ -40,12 +41,10 @@ const Page = () => {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '')
-      const res = await fetch(`${apiBase}/applications?license_type=light-to-heavy`)
-      const json = await res.json()
-      if (json?.success) {
-        setData(json.data as Application[])
-      }
+      const applications = await apiService.getApplications('light-to-heavy')
+      setData(applications as Application[])
+    } catch (error) {
+      console.error('Failed to fetch applications:', error)
     } finally {
       setLoading(false)
     }
@@ -69,15 +68,7 @@ const Page = () => {
     if (!confirm(`Are you sure you want to delete ${application.name}'s application?`)) return
     
     try {
-      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '')
-      const res = await fetch(`${apiBase}/applications/${application.id}/delete`, {
-        method: 'DELETE'
-      })
-      
-      if (!res.ok) {
-        throw new Error('Failed to delete application')
-      }
-      
+      await apiService.deleteApplication(application.id)
       await fetchData() // Refresh the data
     } catch (error) {
       console.error('Failed to delete application:', error)

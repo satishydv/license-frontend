@@ -2,7 +2,6 @@
 
 import {
   Home,
-  Settings,
   User2,
   ChevronUp,
   Users,
@@ -13,6 +12,7 @@ import {
   Package,
   CircleCheck,
   Gauge,
+  FileText,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
@@ -20,7 +20,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -28,9 +27,6 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarSeparator,
 } from "./ui/sidebar";
 import Link from "next/link";
@@ -42,9 +38,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
 } from "./ui/collapsible";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePermissions } from "@/contexts/PermissionContext";
@@ -99,9 +92,9 @@ const items = [
     permission: null, // No permission required for search
   },
   {
-    title: "Settings",
+    title: "Reports",
     url: "#",
-    icon: Settings,
+    icon: FileText,
     permission: null, // No permission required for settings
   },
 ];

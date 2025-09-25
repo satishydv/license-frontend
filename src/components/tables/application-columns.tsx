@@ -37,7 +37,6 @@ type Application = {
 }
 
 export const createApplicationColumns = (onEdit?: (application: Application) => void, onDelete?: (application: Application) => void, onView?: (application: Application) => void): ColumnDef<Application>[] => [
-  { accessorKey: 'id', header: 'ID' },
   { accessorKey: 'name', header: 'Name' },
   { accessorKey: 'father_name', header: 'Father Name' },
   { accessorKey: 'contact_no', header: 'Contact No' },

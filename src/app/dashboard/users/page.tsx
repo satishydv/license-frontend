@@ -25,7 +25,7 @@ export default function UsersPage() {
             <div className="text-red-600 text-6xl mb-4">🚫</div>
             <h2 className="text-xl font-semibold text-red-800 mb-2">Access Denied</h2>
             <p className="text-red-600">
-              You don't have permission to view users. Please contact your administrator.
+              You don&apos;t have permission to view users. Please contact your administrator.
             </p>
           </div>
         </div>

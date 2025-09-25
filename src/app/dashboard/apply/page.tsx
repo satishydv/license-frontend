@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
+import { apiService } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { 
   Select, 
   SelectContent, 
@@ -12,7 +12,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select'
-import { Upload, Cloud, FileText } from 'lucide-react'
+import { Cloud, FileText } from 'lucide-react'
 
 const INDIAN_STATES = [
   "Andaman & Nicobar Islands",
@@ -101,7 +101,8 @@ const DrivingLicenseApplicationForm = () => {
     if (!state) return
     setLoadingCities(true)
     try {
-      const response = await fetch(`/api/cities?state=${encodeURIComponent(state)}`)
+      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '')
+      const response = await fetch(`${apiBase}/cities?state=${encodeURIComponent(state)}`)
       if (response.ok) {
         const data = await response.json()
         setCities(data)
@@ -202,42 +203,38 @@ const DrivingLicenseApplicationForm = () => {
     if (uploadedFile) payload.append('license_attachment', uploadedFile)
     if (paymentReceiptFile) payload.append('payment_receipt', paymentReceiptFile)
 
-    const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '')
-    const res = await fetch(`${apiBase}/applications/create`, {
-      method: 'POST',
-      body: payload
-    })
-    if (!res.ok) {
+    try {
+      await apiService.createApplication(payload)
+      setToastMessage('Application submitted successfully')
+      setShowToast(true)
+
+      // reset form for a fresh start
+      setFormData({
+        name: '',
+        fatherName: '',
+        contactNo: '',
+        dob: '',
+        bloodGroup: '',
+        state: '',
+        city: '',
+        licenseType: '',
+        applicationNo: '',
+        licenseNo: '',
+        issueDate: '',
+        expiryDate: '',
+        coverClass: '',
+        amount: '',
+        payAmount: '',
+        modeOfPayment: ''
+      })
+      setUploadedFile(null)
+      setPaymentReceiptFile(null)
+      setCities([])
+    } catch (error) {
+      console.error('Failed to submit application:', error)
       setToastMessage('Failed to submit application')
       setShowToast(true)
-      return
     }
-    const data = await res.json()
-    setToastMessage('Application submitted successfully')
-    setShowToast(true)
-
-    // reset form for a fresh start
-    setFormData({
-      name: '',
-      fatherName: '',
-      contactNo: '',
-      dob: '',
-      bloodGroup: '',
-      state: '',
-      city: '',
-      licenseType: '',
-      applicationNo: '',
-      licenseNo: '',
-      issueDate: '',
-      expiryDate: '',
-      coverClass: '',
-      amount: '',
-      payAmount: '',
-      modeOfPayment: ''
-    })
-    setUploadedFile(null)
-    setPaymentReceiptFile(null)
-    setCities([])
   }
 
  

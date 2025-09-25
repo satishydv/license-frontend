@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
+import { apiService } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -138,40 +139,31 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
 
   const fetchCompleteApplication = async (id: number) => {
     try {
-      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '')
-      const response = await fetch(`${apiBase}/applications/${id}`)
-      if (response.ok) {
-        const result = await response.json()
-        if (result.success) {
-          const appData = result.data
-          console.log('Complete application data fetched:', appData)
-          setFormData({
-            name: appData.name || '',
-            fatherName: appData.father_name || '',
-            contactNo: appData.contact_no || '',
-            dob: appData.dob || '',
-            bloodGroup: appData.blood_group || '',
-            state: appData.state || '',
-            city: appData.city || '',
-            licenseType: appData.license_type || '',
-            applicationNo: appData.application_no || '',
-            licenseNo: appData.license_no || '',
-            issueDate: appData.issue_date || '',
-            expiryDate: appData.expiry_date || '',
-            coverClass: appData.cover_class || '',
-            amount: appData.amount || '',
-            payAmount: appData.pay_amount || '',
-            modeOfPayment: appData.mode_of_payment || ''
-          })
-          setErrors({})
-          // Load cities for the current state
-          if (appData.state) {
-            console.log('Fetching cities for state:', appData.state)
-            fetchCities(appData.state)
-          }
-        }
-      } else {
-        console.error('Failed to fetch complete application data:', response.status, response.statusText)
+      const appData = await apiService.getApplication(id) as Record<string, unknown>
+      console.log('Complete application data fetched:', appData)
+      setFormData({
+        name: (appData.name as string) || '',
+        fatherName: (appData.father_name as string) || '',
+        contactNo: (appData.contact_no as string) || '',
+        dob: (appData.dob as string) || '',
+        bloodGroup: (appData.blood_group as string) || '',
+        state: (appData.state as string) || '',
+        city: (appData.city as string) || '',
+        licenseType: (appData.license_type as string) || '',
+        applicationNo: (appData.application_no as string) || '',
+        licenseNo: (appData.license_no as string) || '',
+        issueDate: (appData.issue_date as string) || '',
+        expiryDate: (appData.expiry_date as string) || '',
+        coverClass: (appData.cover_class as string) || '',
+        amount: (appData.amount as string) || '',
+        payAmount: (appData.pay_amount as string) || '',
+        modeOfPayment: (appData.mode_of_payment as string) || ''
+      })
+      setErrors({})
+      // Load cities for the current state
+      if (appData.state) {
+        console.log('Fetching cities for state:', appData.state)        
+        fetchCities(appData.state as string)
       }
     } catch (error) {
       console.error('Error fetching complete application data:', error)
@@ -303,21 +295,13 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
       payload.append('pay_amount', formData.payAmount)
       payload.append('mode_of_payment', formData.modeOfPayment)
 
-      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '')
-      const res = await fetch(`${apiBase}/applications/${application.id}/update`, {
-        method: 'POST',
-        body: payload
-      })
-      
-      if (!res.ok) {
-        throw new Error('Failed to update application')
-      }
+      await apiService.updateApplication(application.id, payload)
       
       onUpdate()
       onClose()
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update application:', error)
-      setErrors({ submit: error.message || 'Failed to update application' })
+      setErrors({ submit: error instanceof Error ? error.message : 'Failed to update application' })
     } finally {
       setIsLoading(false)
     }

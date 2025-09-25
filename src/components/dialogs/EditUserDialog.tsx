@@ -105,9 +105,9 @@ export default function EditUserDialog({ isOpen, onClose, user }: EditUserDialog
       });
       setErrors({});
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update user:', error);
-      setErrors({ submit: error.message || 'Failed to update user' });
+      setErrors({ submit: error instanceof Error ? error.message : 'Failed to update user' });
     } finally {
       setIsLoading(false);
     }

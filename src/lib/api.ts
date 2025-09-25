@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost/driving-license/index.php/api';
 
-interface ApiResponse<T = any> {
+interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data?: T;
@@ -19,15 +19,21 @@ interface RegisterData {
   role?: string;
 }
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
+import { User } from '@/types/user';
+
+interface ApiUser extends Omit<User, 'role' | 'status'> {
   role: string;
   status: string;
-  created_at: string;
-  last_login?: string;
   permissions?: string[];
+}
+
+// Helper function to convert ApiUser to User
+function convertApiUserToUser(apiUser: ApiUser): User {
+  return {
+    ...apiUser,
+    role: apiUser.role as 'admin' | 'user' | 'moderator',
+    status: apiUser.status as 'active' | 'inactive' | 'pending'
+  };
 }
 
 interface AuthResponse {
@@ -84,9 +90,9 @@ class ApiService {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (this.token) {
@@ -156,21 +162,25 @@ class ApiService {
 
   // Authentication methods
   async login(credentials: LoginData): Promise<AuthResponse> {
-    const response = await this.request<AuthResponse>('/auth/login', {
+    const response = await this.request<{ user: ApiUser; token: string; expires_in: number }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
 
     if (response.success && response.data) {
       this.setToken(response.data.token);
-      return response.data;
+      return {
+        user: convertApiUserToUser(response.data.user),
+        token: response.data.token,
+        expires_in: response.data.expires_in
+      };
     }
 
     throw new Error(response.message || 'Login failed');
   }
 
-  async register(userData: RegisterData): Promise<{ user: User }> {
-    const response = await this.request<{ user: User }>('/auth/register', {
+  async register(userData: RegisterData): Promise<{ user: ApiUser }> {
+    const response = await this.request<{ user: ApiUser }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
@@ -183,10 +193,10 @@ class ApiService {
   }
 
   async getCurrentUser(): Promise<User> {
-    const response = await this.request<{ user: User }>('/auth/me');
+    const response = await this.request<{ user: ApiUser }>('/auth/me');
 
     if (response.success && response.data) {
-      return response.data.user;
+      return convertApiUserToUser(response.data.user);
     }
 
     throw new Error(response.message || 'Failed to get user data');
@@ -302,36 +312,36 @@ class ApiService {
 
   // User management methods
   async getUsers(): Promise<User[]> {
-    const response = await this.request<{ users: User[] }>('/users');
+    const response = await this.request<{ users: ApiUser[] }>('/users');
 
     if (response.success && response.data) {
-      return response.data.users;
+      return response.data.users.map(convertApiUserToUser);
     }
 
     throw new Error(response.message || 'Failed to get users');
   }
 
   async createUser(userData: { name: string; email: string; password: string; role: string; status?: string }): Promise<User> {
-    const response = await this.request<{ user: User }>('/users/create', {
+    const response = await this.request<{ user: ApiUser }>('/users/create', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
 
     if (response.success && response.data) {
-      return response.data.user;
+      return convertApiUserToUser(response.data.user);
     }
 
     throw new Error(response.message || 'Failed to create user');
   }
 
   async updateUser(id: number, userData: { name: string; email: string; role: string; status: string; password?: string }): Promise<User> {
-    const response = await this.request<{ user: User }>(`/users/${id}/update`, {
+    const response = await this.request<{ user: ApiUser }>(`/users/${id}/update`, {
       method: 'PUT',
       body: JSON.stringify(userData),
     });
 
     if (response.success && response.data) {
-      return response.data.user;
+      return convertApiUserToUser(response.data.user);
     }
 
     throw new Error(response.message || 'Failed to update user');
@@ -348,13 +358,109 @@ class ApiService {
   }
 
   async getUser(id: number): Promise<User> {
-    const response = await this.request<{ user: User }>(`/users/${id}`);
+    const response = await this.request<{ user: ApiUser }>(`/users/${id}`);
 
     if (response.success && response.data) {
-      return response.data.user;
+      return convertApiUserToUser(response.data.user);
     }
 
     throw new Error(response.message || 'Failed to get user');
+  }
+
+  // Application management methods
+  async getApplications(licenseType?: string): Promise<unknown[]> {
+    const endpoint = licenseType ? `/applications?license_type=${licenseType}` : '/applications';
+    const response = await this.request<{ data: unknown }>(endpoint);
+
+    if (response.success) {
+      const payload = response.data as unknown;
+      // Handle common API shapes gracefully
+      // 1) { data: [...] }
+      // 2) { applications: [...] }
+      // 3) [ ... ]
+      if (Array.isArray(payload)) {
+        return payload as unknown[];
+      }
+      if (payload && typeof payload === 'object') {
+        const maybeData = (payload as Record<string, unknown>).data;
+        if (Array.isArray(maybeData)) {
+          return maybeData as unknown[];
+        }
+        const maybeApps = (payload as Record<string, unknown>).applications;
+        if (Array.isArray(maybeApps)) {
+          return maybeApps as unknown[];
+        }
+      }
+      return [];
+    }
+
+    throw new Error(response.message || 'Failed to get applications');
+  }
+
+  async getApplication(id: number): Promise<unknown> {
+    const response = await this.request<{ data: unknown }>(`/applications/${id}`);
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'Failed to get application');
+  }
+
+  async createApplication(formData: FormData): Promise<unknown> {
+    const url = `${this.baseURL}/applications/create`;
+    
+    const headers: HeadersInit = {};
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to create application');
+    }
+
+    return data;
+  }
+
+  async updateApplication(id: number, formData: FormData): Promise<unknown> {
+    const url = `${this.baseURL}/applications/${id}/update`;
+    
+    const headers: HeadersInit = {};
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to update application');
+    }
+
+    return data;
+  }
+
+  async deleteApplication(id: number): Promise<void> {
+    const response = await this.request(`/applications/${id}/delete`, {
+      method: 'DELETE',
+    });
+
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to delete application');
+    }
   }
 }
 

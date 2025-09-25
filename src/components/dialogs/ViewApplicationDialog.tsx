@@ -154,7 +154,7 @@ export default function ViewApplicationDialog({ isOpen, onClose, application }: 
                     <p className="text-gray-900">{app.name}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Father's Name</label>
+                    <label className="text-sm font-medium text-gray-600">Father&apos;s Name</label>
                     <p className="text-gray-900">{app.father_name}</p>
                   </div>
                   <div>
@@ -267,7 +267,10 @@ export default function ViewApplicationDialog({ isOpen, onClose, application }: 
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(getImageUrl(app.license_attachment_path), '_blank')}
+                            onClick={() => {
+                              const url = getImageUrl(app.license_attachment_path);
+                              if (url) window.open(url, '_blank');
+                            }}
                             className="flex items-center space-x-1"
                           >
                             <Eye className="w-4 h-4" />
@@ -310,7 +313,10 @@ export default function ViewApplicationDialog({ isOpen, onClose, application }: 
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(getImageUrl(app.payment_receipt_path), '_blank')}
+                            onClick={() => {
+                              const url = getImageUrl(app.payment_receipt_path);
+                              if (url) window.open(url, '_blank');
+                            }}
                             className="flex items-center space-x-1"
                           >
                             <Eye className="w-4 h-4" />

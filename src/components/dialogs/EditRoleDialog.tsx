@@ -38,6 +38,15 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
         { id: 'roles:update', label: 'Update' },
         { id: 'roles:delete', label: 'Delete' },
       ]
+    },
+    {
+      table: 'Applications',
+      permissions: [
+        { id: 'applications:create', label: 'Create' },
+        { id: 'applications:read', label: 'Read' },
+        { id: 'applications:update', label: 'Update' },
+        { id: 'applications:delete', label: 'Delete' },
+      ]
     }
   ];
 
@@ -125,9 +134,9 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
       });
       setErrors({});
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update role:', error);
-      setErrors({ submit: error.message || 'Failed to update role' });
+      setErrors({ submit: error instanceof Error ? error.message : 'Failed to update role' });
     } finally {
       setIsLoading(false);
     }

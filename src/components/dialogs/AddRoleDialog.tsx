@@ -26,6 +26,15 @@ const TABLE_PERMISSIONS = [
       { id: 'roles:update', label: 'Update' },
       { id: 'roles:delete', label: 'Delete' },
     ]
+  },
+  {
+    table: 'Applications',
+    permissions: [
+      { id: 'applications:create', label: 'Create' },
+      { id: 'applications:read', label: 'Read' },
+      { id: 'applications:update', label: 'Update' },
+      { id: 'applications:delete', label: 'Delete' },
+    ]
   }
 ];
 
@@ -58,12 +67,12 @@ function AddRoleDialog({ isOpen, onClose }: AddRoleDialogProps) {
       setDescription('');
       setPermissions([]);
       onClose();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Role creation error:', err);
-      if (err.message && err.message.includes('Validation failed')) {
+      if (err instanceof Error && err.message && err.message.includes('Validation failed')) {
         setError('Validation failed. Please check your input and try again.');
       } else {
-        setError(err.message || 'Failed to create role');
+        setError(err instanceof Error ? err.message : 'Failed to create role');
       }
     } finally {
       setIsLoading(false);
@@ -82,7 +91,7 @@ function AddRoleDialog({ isOpen, onClose }: AddRoleDialogProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+      <div className="bg-white rounded-lg p-6 w-full max-w-6xl max-h-[75vh] mx-4 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Add New Role</h2>
           <button
