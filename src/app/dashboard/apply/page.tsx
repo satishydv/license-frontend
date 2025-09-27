@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { apiService } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -79,6 +79,7 @@ const DrivingLicenseApplicationForm = () => {
   const [dragActiveReceipt, setDragActiveReceipt] = useState(false)
   const [cities, setCities] = useState<string[]>([])
   const [loadingCities, setLoadingCities] = useState(false)
+  const [loadedState, setLoadedState] = useState<string>('')
 
   // simple toast state
   const [showToast, setShowToast] = useState(false)
@@ -97,28 +98,44 @@ const DrivingLicenseApplicationForm = () => {
     }))
   }
 
-  const fetchCities = async (state: string) => {
-    if (!state) return
+  const fetchCities = useCallback(async (state: string) => {
+    if (!state || state === loadedState) return
     setLoadingCities(true)
     try {
-      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '')
+      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost/driving-license/index.php/api').replace(/\/$/, '')
       const response = await fetch(`${apiBase}/cities?state=${encodeURIComponent(state)}`)
       if (response.ok) {
         const data = await response.json()
-        setCities(data)
+        // Handle both array response (from old API) and object response (from new API)
+        if (Array.isArray(data)) {
+          setCities(data)
+        } else if (data && Array.isArray(data.cities)) {
+          setCities(data.cities.map((city: any) => city.city_name))
+        } else {
+          setCities([])
+        }
+        setLoadedState(state)
+      } else {
+        console.error('Failed to fetch cities:', response.status, response.statusText)
+        setCities([])
       }
     } catch (error) {
       console.error('Error fetching cities:', error)
+      setCities([])
     } finally {
       setLoadingCities(false)
     }
-  }
+  }, [loadedState])
 
   const handleStateChange = (state: string) => {
     handleInputChange('state', state)
     handleInputChange('city', '') // Clear city when state changes
     setCities([]) // Clear cities list
-    fetchCities(state)
+    setLoadedState('') // Reset loaded state
+    // Only fetch cities if state is not empty
+    if (state.trim()) {
+      fetchCities(state)
+    }
   }
 
   const handleFileUpload = (file: File) => {
@@ -240,13 +257,13 @@ const DrivingLicenseApplicationForm = () => {
  
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-background py-8 px-4">
       <div className="w-full max-w-none mx-auto">
-        <div className="bg-white rounded-lg shadow-sm border p-8">
+        <div className="bg-card rounded-lg shadow-sm border p-8">
           {/* Header */}
           <div className="text-center mb-8">
            
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Complete the form below to apply for your driving license
             </p>
           </div>
@@ -254,7 +271,7 @@ const DrivingLicenseApplicationForm = () => {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* License Type - moved to top */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+              <h2 className="text-xl font-semibold text-foreground border-b pb-2">
                 License Type
               </h2>
 
@@ -275,7 +292,7 @@ const DrivingLicenseApplicationForm = () => {
             </div>
             {/* Personal Details Section */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+              <h2 className="text-xl font-semibold text-foreground border-b pb-2">
                 Personal Details
               </h2>
               
@@ -354,7 +371,7 @@ const DrivingLicenseApplicationForm = () => {
 
             {/* Address Information Section */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+              <h2 className="text-xl font-semibold text-foreground border-b pb-2">
                 Address Information
               </h2>
               
@@ -391,7 +408,7 @@ const DrivingLicenseApplicationForm = () => {
                             : "Select your city"
                       } />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[200px] overflow-y-auto">
                       {cities.map((city) => (
                         <SelectItem key={city} value={city}>
                           {city}
@@ -405,7 +422,7 @@ const DrivingLicenseApplicationForm = () => {
 
             {/* License Information Section */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+              <h2 className="text-xl font-semibold text-foreground border-b pb-2">
                 License Information
               </h2>
               
@@ -476,15 +493,15 @@ const DrivingLicenseApplicationForm = () => {
 
             {/* File Upload Section */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+              <h2 className="text-xl font-semibold text-foreground border-b pb-2">
                 Upload Your Attachment
               </h2>
               
               <div
                 className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   dragActive 
-                    ? 'border-blue-400 bg-blue-50' 
-                    : 'border-gray-300 hover:border-gray-400'
+                    ? 'border-primary bg-primary/10' 
+                    : 'border-border hover:border-border/80'
                 }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -501,25 +518,25 @@ const DrivingLicenseApplicationForm = () => {
                 
                 <div className="space-y-4">
                   <div className="flex justify-center">
-                    <Cloud className="h-12 w-12 text-blue-600" />
+                    <Cloud className="h-12 w-12 text-primary" />
                   </div>
                   
                   <div>
-                    <p className="text-lg font-medium text-gray-900">
+                    <p className="text-lg font-medium text-foreground">
                       Upload your files{' '}
-                      <span className="text-blue-600 cursor-pointer hover:underline">
+                      <span className="text-primary cursor-pointer hover:underline">
                         here
                       </span>
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       Or you can drag and drop your file
                     </p>
                   </div>
                   
                   {uploadedFile && (
-                    <div className="flex items-center justify-center gap-2 p-3 bg-green-50 border border-green-200 rounded-md">
-                      <FileText className="h-5 w-5 text-green-600" />
-                      <span className="text-sm text-green-800 font-medium">
+                    <div className="flex items-center justify-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+                      <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      <span className="text-sm text-green-800 dark:text-green-200 font-medium">
                         {uploadedFile.name}
                       </span>
                     </div>
@@ -530,7 +547,7 @@ const DrivingLicenseApplicationForm = () => {
 
             {/* Amount Section */}
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">
+              <h2 className="text-xl font-semibold text-foreground border-b pb-2">
                 Payment Information
               </h2>
               
@@ -565,7 +582,7 @@ const DrivingLicenseApplicationForm = () => {
                     value={formData.modeOfPayment}
                     onValueChange={(value) => handleInputChange('modeOfPayment', value)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select mode of payment" />
                     </SelectTrigger>
                     <SelectContent>
@@ -583,8 +600,8 @@ const DrivingLicenseApplicationForm = () => {
                 <div
                   className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                     dragActiveReceipt 
-                      ? 'border-blue-400 bg-blue-50' 
-                      : 'border-gray-300 hover:border-gray-400'
+                      ? 'border-primary bg-primary/10' 
+                      : 'border-border hover:border-border/80'
                   }`}
                   onDragEnter={handleReceiptDrag}
                   onDragLeave={handleReceiptDrag}
@@ -601,16 +618,16 @@ const DrivingLicenseApplicationForm = () => {
 
                   <div className="space-y-2">
                     <div className="flex justify-center">
-                      <Cloud className="h-10 w-10 text-gray-400" />
+                      <Cloud className="h-10 w-10 text-muted-foreground" />
                     </div>
-                    <p className="text-lg font-semibold text-gray-900">Browse Files</p>
-                    <p className="text-sm text-gray-500">Drag and drop files here</p>
+                    <p className="text-lg font-semibold text-foreground">Browse Files</p>
+                    <p className="text-sm text-muted-foreground">Drag and drop files here</p>
                   </div>
 
                   {paymentReceiptFile && (
-                    <div className="mt-4 flex items-center justify-center gap-2 p-3 bg-green-50 border border-green-200 rounded-md">
-                      <FileText className="h-5 w-5 text-green-600" />
-                      <span className="text-sm text-green-800 font-medium">
+                    <div className="mt-4 flex items-center justify-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+                      <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      <span className="text-sm text-green-800 dark:text-green-200 font-medium">
                         {paymentReceiptFile.name}
                       </span>
                     </div>
@@ -625,7 +642,7 @@ const DrivingLicenseApplicationForm = () => {
               <Button 
                 type="submit" 
                 size="lg" 
-                className="px-12 py-3 text-lg font-medium bg-blue-500 text-white"
+                className="px-12 py-3 text-lg font-medium"
               >
                 Submit Application
               </Button>
@@ -637,7 +654,7 @@ const DrivingLicenseApplicationForm = () => {
       {/* Toast */}
       {showToast && (
         <div className="fixed bottom-6 right-6 z-50">
-          <div className="bg-gray-900 text-white px-4 py-3 rounded shadow-lg">
+          <div className="bg-card text-card-foreground border px-4 py-3 rounded shadow-lg">
             <span className="text-sm">{toastMessage}</span>
           </div>
         </div>

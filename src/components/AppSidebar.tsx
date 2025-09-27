@@ -13,6 +13,11 @@ import {
   CircleCheck,
   Gauge,
   FileText,
+  ChevronDown,
+  DollarSign,
+  CreditCard,
+  User,
+  Building2,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
@@ -27,6 +32,9 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarSeparator,
 } from "./ui/sidebar";
 import Link from "next/link";
@@ -38,6 +46,9 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "./ui/collapsible";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePermissions } from "@/contexts/PermissionContext";
@@ -60,6 +71,12 @@ const items = [
     url: "/dashboard/users",
     icon: Users,
     permission: "users:read",
+  },
+  {
+    title: "city",
+    url: "/dashboard/city",
+    icon: Building2,
+    permission: null, // No permission required for search
   },
   {
     title: "Apply",
@@ -91,11 +108,26 @@ const items = [
     icon: CircleCheck,
     permission: null, // No permission required for search
   },
+];
+
+const reportSubItems = [
   {
-    title: "Reports",
-    url: "#",
-    icon: FileText,
-    permission: null, // No permission required for settings
+    title: "Total Income",
+    url: "/dashboard/total-report",
+    icon: DollarSign,
+    permission: null,
+  },
+  {
+    title: "Dues",
+    url: "/dashboard/due-report",
+    icon: CreditCard,
+    permission: null,
+  },
+  {
+    title: "Customer",
+    url: "/dashboard/customer-report",
+    icon: User,
+    permission: null,
   },
 ];
 
@@ -157,6 +189,40 @@ const AppSidebar = () => {
                   </SidebarMenuItem>
                 );
               })}
+              
+              {/* Reports Collapsible Menu */}
+              <Collapsible defaultOpen className="group/collapsible">
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton>
+                      <FileText />
+                      <span>Reports</span>
+                      <ChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {reportSubItems.map((subItem) => {
+                        const isSubActive = pathname === subItem.url;
+                        
+                        return (
+                          <SidebarMenuSubItem key={subItem.title}>
+                            <SidebarMenuSubButton 
+                              asChild
+                              className={isSubActive ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg" : ""}
+                            >
+                              <Link href={subItem.url}>
+                                <subItem.icon />
+                                <span>{subItem.title}</span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        );
+                      })}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
