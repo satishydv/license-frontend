@@ -47,6 +47,33 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
         { id: 'applications:update', label: 'Update' },
         { id: 'applications:delete', label: 'Delete' },
       ]
+    },
+    {
+      table: 'Vendors',
+      permissions: [
+        { id: 'vendors:create', label: 'Create' },
+        { id: 'vendors:read', label: 'Read' },
+        { id: 'vendors:update', label: 'Update' },
+        { id: 'vendors:delete', label: 'Delete' },
+      ]
+    },
+    {
+      table: 'DTO',
+      permissions: [
+        { id: 'dto:create', label: 'Create' },
+        { id: 'dto:read', label: 'Read' },
+        { id: 'dto:update', label: 'Update' },
+        { id: 'dto:delete', label: 'Delete' },
+      ]
+    },
+    {
+      table: 'Cities',
+      permissions: [
+        { id: 'cities:create', label: 'Create' },
+        { id: 'cities:read', label: 'Read' },
+        { id: 'cities:update', label: 'Update' },
+        { id: 'cities:delete', label: 'Delete' },
+      ]
     }
   ];
 
@@ -158,13 +185,13 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Edit Role</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg mx-4">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Role</h2>
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
+            className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 disabled:opacity-50"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -174,13 +201,13 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errors.submit && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-md text-sm">
               {errors.submit}
             </div>
           )}
 
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Role Name *
             </label>
             <input
@@ -189,19 +216,19 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                errors.name ? 'border-red-300' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                errors.name ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Enter role name"
               disabled={isLoading}
             />
             {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description
             </label>
             <textarea
@@ -210,22 +237,22 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
               value={formData.description}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
               placeholder="Enter role description"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Permissions *
             </label>
             <div className={`space-y-4 max-h-64 overflow-y-auto ${
-              errors.permissions ? 'border-red-300' : 'border-gray-300'
+              errors.permissions ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
             }`}>
               {TABLE_PERMISSIONS.map((tableGroup) => (
                 <div key={tableGroup.table} className="border border-gray-200 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-800 mb-2">{tableGroup.table} Table</h4>
+                  <h4 className="text-sm font-medium text-gray-800 dark:text-white mb-2">{tableGroup.table} Table</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {tableGroup.permissions.map((permission) => (
                       <div key={permission.id} className="flex items-center">
@@ -234,12 +261,12 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
                           id={`permission-${permission.id}`}
                           checked={formData.permissions.includes(permission.id)}
                           onChange={() => handlePermissionChange(permission.id)}
-                          className="mr-2 h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 rounded"
+                          className="mr-2 h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 dark:border-gray-600 rounded"
                           disabled={isLoading}
                         />
                         <label 
                           htmlFor={`permission-${permission.id}`} 
-                          className="text-sm text-gray-700 cursor-pointer"
+                          className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
                         >
                           {permission.label}
                         </label>
@@ -250,7 +277,7 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
               ))}
             </div>
             {errors.permissions && (
-              <p className="mt-1 text-sm text-red-600">{errors.permissions}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.permissions}</p>
             )}
           </div>
 
@@ -259,14 +286,14 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
               type="button"
               onClick={handleClose}
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-800 bg-yellow-400 hover:bg-yellow-500 rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white bg-yellow-400 hover:bg-yellow-500 rounded-md transition-colors disabled:opacity-50"
             >
               {isLoading ? 'Updating...' : 'Update Role'}
             </button>

@@ -137,13 +137,13 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Add New Vendor</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Add New Vendor</h2>
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -153,14 +153,14 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errors.submit && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-md text-sm">
               {errors.submit}
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Name *
               </label>
               <input
@@ -169,19 +169,19 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.name ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.name ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="Enter vendor name"
                 disabled={isLoading}
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="phone_no" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="phone_no" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Phone Number *
               </label>
               <input
@@ -190,20 +190,20 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
                 name="phone_no"
                 value={formData.phone_no}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.phone_no ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.phone_no ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="Enter phone number"
                 disabled={isLoading}
               />
               {errors.phone_no && (
-                <p className="mt-1 text-sm text-red-600">{errors.phone_no}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone_no}</p>
               )}
             </div>
           </div>
 
           <div>
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Address *
             </label>
             <textarea
@@ -212,20 +212,20 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
               value={formData.address}
               onChange={handleInputChange}
               rows={3}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                errors.address ? 'border-red-300' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                errors.address ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Enter full address"
               disabled={isLoading}
             />
             {errors.address && (
-              <p className="mt-1 text-sm text-red-600">{errors.address}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.address}</p>
             )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Amount *
               </label>
               <input
@@ -236,19 +236,19 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
                 onChange={handleInputChange}
                 min="0"
                 step="0.01"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.amount ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="0.00"
                 disabled={isLoading}
               />
               {errors.amount && (
-                <p className="mt-1 text-sm text-red-600">{errors.amount}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="pay_amount" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="pay_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Pay Amount *
               </label>
               <input
@@ -259,19 +259,19 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
                 onChange={handleInputChange}
                 min="0"
                 step="0.01"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.pay_amount ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.pay_amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="0.00"
                 disabled={isLoading}
               />
               {errors.pay_amount && (
-                <p className="mt-1 text-sm text-red-600">{errors.pay_amount}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.pay_amount}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="total_customer" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="total_customer" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Total Customers *
               </label>
               <input
@@ -281,20 +281,20 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
                 value={formData.total_customer}
                 onChange={handleInputChange}
                 min="0"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.total_customer ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.total_customer ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="0"
                 disabled={isLoading}
               />
               {errors.total_customer && (
-                <p className="mt-1 text-sm text-red-600">{errors.total_customer}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.total_customer}</p>
               )}
             </div>
           </div>
 
           <div>
-            <label htmlFor="mode_of_payment" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="mode_of_payment" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Mode of Payment *
             </label>
             <select
@@ -302,7 +302,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
               name="mode_of_payment"
               value={formData.mode_of_payment}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white"
               disabled={isLoading}
             >
               <option value="cash">Cash</option>
@@ -312,7 +312,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
           </div>
 
           <div>
-            <label htmlFor="receipt_image_path" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="receipt_image_path" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Receipt Image (Optional)
             </label>
             <input
@@ -321,11 +321,11 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
               name="receipt_image_path"
               onChange={handleFileChange}
               accept="image/*,.pdf"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white"
               disabled={isLoading}
             />
             {formData.receipt_image_path && (
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 Selected: {formData.receipt_image_path.name}
               </p>
             )}
@@ -336,14 +336,14 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
               type="button"
               onClick={handleClose}
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-800 bg-yellow-400 hover:bg-yellow-500 rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-800 dark:text-gray-900 bg-yellow-400 hover:bg-yellow-500 rounded-md transition-colors disabled:opacity-50"
             >
               {isLoading ? 'Creating...' : 'Create Vendor'}
             </button>

@@ -62,6 +62,7 @@ const DrivingLicenseApplicationForm = () => {
     bloodGroup: '',
     state: '',
     city: '',
+    vendor: '',
     licenseType: '',
     applicationNo: '',
     licenseNo: '',
@@ -80,6 +81,8 @@ const DrivingLicenseApplicationForm = () => {
   const [cities, setCities] = useState<string[]>([])
   const [loadingCities, setLoadingCities] = useState(false)
   const [loadedState, setLoadedState] = useState<string>('')
+  const [vendors, setVendors] = useState<Array<{vendor_id: number, name: string}>>([])
+  const [loadingVendors, setLoadingVendors] = useState(false)
 
   // simple toast state
   const [showToast, setShowToast] = useState(false)
@@ -126,6 +129,39 @@ const DrivingLicenseApplicationForm = () => {
       setLoadingCities(false)
     }
   }, [loadedState])
+
+  const fetchVendors = useCallback(async () => {
+    setLoadingVendors(true)
+    try {
+      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost/driving-license/index.php/api').replace(/\/$/, '')
+      // Use the public endpoint that doesn't require authentication
+      const response = await fetch(`${apiBase}/vendors/public`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.data && Array.isArray(data.data.vendors)) {
+          setVendors(data.data.vendors.map((vendor: any) => ({
+            vendor_id: vendor.vendor_id,
+            name: vendor.name
+          })))
+        } else {
+          setVendors([])
+        }
+      } else {
+        console.error('Failed to fetch vendors:', response.status, response.statusText)
+        setVendors([])
+      }
+    } catch (error) {
+      console.error('Error fetching vendors:', error)
+      setVendors([])
+    } finally {
+      setLoadingVendors(false)
+    }
+  }, [])
+
+  // Fetch vendors on component mount
+  useEffect(() => {
+    fetchVendors()
+  }, [fetchVendors])
 
   const handleStateChange = (state: string) => {
     handleInputChange('state', state)
@@ -208,6 +244,7 @@ const DrivingLicenseApplicationForm = () => {
     payload.append('blood_group', formData.bloodGroup)
     payload.append('state', formData.state)
     payload.append('city', formData.city)
+    payload.append('vendor', formData.vendor)
     payload.append('license_type', formData.licenseType)
     payload.append('application_no', formData.applicationNo)
     payload.append('license_no', formData.licenseNo)
@@ -234,6 +271,7 @@ const DrivingLicenseApplicationForm = () => {
         bloodGroup: '',
         state: '',
         city: '',
+        vendor: '',
         licenseType: '',
         applicationNo: '',
         licenseNo: '',
@@ -269,25 +307,45 @@ const DrivingLicenseApplicationForm = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* License Type - moved to top */}
+            {/* Vendor and License Type Section - Two columns in one row */}
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-foreground border-b pb-2">
-                License Type
+                Application Details
               </h2>
 
-              <div className="space-y-2">
-                <Label htmlFor="licenseType">Type of License *</Label>
-                <Select value={formData.licenseType} onValueChange={(value) => handleInputChange('licenseType', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type of license" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light-to-heavy">Light to Heavy</SelectItem>
-                    <SelectItem value="direct-heavy">Direct Heavy</SelectItem>
-                    <SelectItem value="light-license-renewal">Light License or Renewal</SelectItem>
-                    <SelectItem value="correction">Correction</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Vendor Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="vendor">Select Vendor *</Label>
+                  <Select value={formData.vendor} onValueChange={(value) => handleInputChange('vendor', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={loadingVendors ? "Loading vendors..." : "Select a vendor"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {vendors.map((vendor) => (
+                        <SelectItem key={vendor.vendor_id} value={vendor.name}>
+                          {vendor.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* License Type */}
+                <div className="space-y-2">
+                  <Label htmlFor="licenseType">Type of License *</Label>
+                  <Select value={formData.licenseType} onValueChange={(value) => handleInputChange('licenseType', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type of license" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light-to-heavy">Light to Heavy</SelectItem>
+                      <SelectItem value="direct-heavy">Direct Heavy</SelectItem>
+                      <SelectItem value="light-license-renewal">Light License or Renewal</SelectItem>
+                      <SelectItem value="correction">Correction</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             {/* Personal Details Section */}
@@ -429,15 +487,14 @@ const DrivingLicenseApplicationForm = () => {
               
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="applicationNo">Application Number *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="applicationNo">Application Number</Label>
                   <Input
                     id="applicationNo"
                     type="text"
                     placeholder="Enter application number"
                     value={formData.applicationNo}
                     onChange={(e) => handleInputChange('applicationNo', e.target.value)}
-                    required
                   />
                 </div>
 
@@ -552,32 +609,30 @@ const DrivingLicenseApplicationForm = () => {
               </h2>
               
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="amount">Amount *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="amount">Amount</Label>
                   <Input
                     id="amount"
                     type="number"
                     placeholder="Enter amount"
                     value={formData.amount}
                     onChange={(e) => handleInputChange('amount', e.target.value)}
-                    required
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="payAmount">Pay Amount *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="payAmount">Pay Amount</Label>
                   <Input
                     id="payAmount"
                     type="number"
                     placeholder="Enter pay amount"
                     value={formData.payAmount}
                     onChange={(e) => handleInputChange('payAmount', e.target.value)}
-                    required
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="modeOfPayment">Mode of Payment *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="modeOfPayment">Mode of Payment</Label>
                   <Select
                     value={formData.modeOfPayment}
                     onValueChange={(value) => handleInputChange('modeOfPayment', value)}

@@ -125,13 +125,13 @@ export default function ViewApplicationDialog({ isOpen, onClose, application }: 
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[95vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl max-h-[95vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Application Details</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Application Details</h2>
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
@@ -145,119 +145,119 @@ export default function ViewApplicationDialog({ isOpen, onClose, application }: 
             <div className="space-y-8">
               {/* Personal Information */}
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                   Personal Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Name</label>
-                    <p className="text-gray-900">{app.name}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Name</label>
+                    <p className="text-gray-900 dark:text-white">{app.name}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Father&apos;s Name</label>
-                    <p className="text-gray-900">{app.father_name}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Father&apos;s Name</label>
+                    <p className="text-gray-900 dark:text-white">{app.father_name}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Contact Number</label>
-                    <p className="text-gray-900">{app.contact_no}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Contact Number</label>
+                    <p className="text-gray-900 dark:text-white">{app.contact_no}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Date of Birth</label>
-                    <p className="text-gray-900">{formatDate(app.dob)}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Date of Birth</label>
+                    <p className="text-gray-900 dark:text-white">{formatDate(app.dob)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Blood Group</label>
-                    <p className="text-gray-900">{app.blood_group}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Blood Group</label>
+                    <p className="text-gray-900 dark:text-white">{app.blood_group}</p>
                   </div>
                 </div>
               </div>
 
               {/* Address Information */}
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                   Address Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-600">State</label>
-                    <p className="text-gray-900">{app.state}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">State</label>
+                    <p className="text-gray-900 dark:text-white">{app.state}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">City</label>
-                    <p className="text-gray-900">{app.city}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">City</label>
+                    <p className="text-gray-900 dark:text-white">{app.city}</p>
                   </div>
                 </div>
               </div>
 
               {/* License Information */}
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                   License Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-600">License Type</label>
-                    <p className="text-gray-900">{formatLicenseType(app.license_type)}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">License Type</label>
+                    <p className="text-gray-900 dark:text-white">{formatLicenseType(app.license_type)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Application Number</label>
-                    <p className="text-gray-900">{app.application_no}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Application Number</label>
+                    <p className="text-gray-900 dark:text-white">{app.application_no}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">License Number</label>
-                    <p className="text-gray-900">{app.license_no}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">License Number</label>
+                    <p className="text-gray-900 dark:text-white">{app.license_no}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Issue Date</label>
-                    <p className="text-gray-900">{formatDate(app.issue_date)}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Issue Date</label>
+                    <p className="text-gray-900 dark:text-white">{formatDate(app.issue_date)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Expiry Date</label>
-                    <p className="text-gray-900">{formatDate(app.expiry_date)}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Expiry Date</label>
+                    <p className="text-gray-900 dark:text-white">{formatDate(app.expiry_date)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Cover/Class</label>
-                    <p className="text-gray-900">{app.cover_class}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Cover/Class</label>
+                    <p className="text-gray-900 dark:text-white">{app.cover_class}</p>
                   </div>
                 </div>
               </div>
 
               {/* Payment Information */}
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                   Payment Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Amount</label>
-                    <p className="text-gray-900">₹{app.amount}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Amount</label>
+                    <p className="text-gray-900 dark:text-white">₹{app.amount}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Pay Amount</label>
-                    <p className="text-gray-900">{app.pay_amount ? `₹${app.pay_amount}` : 'N/A'}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Pay Amount</label>
+                    <p className="text-gray-900 dark:text-white">{app.pay_amount ? `₹${app.pay_amount}` : 'N/A'}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Mode of Payment</label>
-                    <p className="text-gray-900">{formatPaymentMode(app.mode_of_payment)}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Mode of Payment</label>
+                    <p className="text-gray-900 dark:text-white">{formatPaymentMode(app.mode_of_payment)}</p>
                   </div>
                 </div>
               </div>
 
               {/* Attachments */}
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                   Attachments
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* License Attachment */}
                   <div className="space-y-3">
-                    <h4 className="font-medium text-gray-700">License Attachment</h4>
+                    <h4 className="font-medium text-gray-700 dark:text-gray-300">License Attachment</h4>
                     {app.license_attachment_path ? (
                       <div className="border rounded-lg p-4 bg-white">
                         <div className="flex items-center space-x-3 mb-3">
                           <FileImage className="w-8 h-8 text-blue-600" />
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">
                               {app.license_attachment_path.split('/').pop()}
                             </p>
                             <p className="text-xs text-gray-500">License Document</p>
@@ -297,13 +297,13 @@ export default function ViewApplicationDialog({ isOpen, onClose, application }: 
 
                   {/* Payment Receipt */}
                   <div className="space-y-3">
-                    <h4 className="font-medium text-gray-700">Payment Receipt</h4>
+                    <h4 className="font-medium text-gray-700 dark:text-gray-300">Payment Receipt</h4>
                     {app.payment_receipt_path ? (
                       <div className="border rounded-lg p-4 bg-white">
                         <div className="flex items-center space-x-3 mb-3">
                           <FileImage className="w-8 h-8 text-green-600" />
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">
                               {app.payment_receipt_path.split('/').pop()}
                             </p>
                             <p className="text-xs text-gray-500">Payment Receipt</p>
@@ -345,17 +345,17 @@ export default function ViewApplicationDialog({ isOpen, onClose, application }: 
 
               {/* Application Timeline */}
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                   Application Timeline
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Created At</label>
-                    <p className="text-gray-900">{formatDate(app.created_at)}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Created At</label>
+                    <p className="text-gray-900 dark:text-white">{formatDate(app.created_at)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Last Updated</label>
-                    <p className="text-gray-900">{formatDate(app.updated_at)}</p>
+                    <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Last Updated</label>
+                    <p className="text-gray-900 dark:text-white">{formatDate(app.updated_at)}</p>
                   </div>
                 </div>
               </div>

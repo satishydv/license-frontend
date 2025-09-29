@@ -110,13 +110,13 @@ export default function EditCityDialog({ isOpen, onClose, city }: EditCityDialog
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Edit City</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Edit City</h2>
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
+            className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 disabled:opacity-50"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -126,13 +126,13 @@ export default function EditCityDialog({ isOpen, onClose, city }: EditCityDialog
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errors.submit && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-md text-sm">
               {errors.submit}
             </div>
           )}
 
           <div>
-            <label htmlFor="city_name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="city_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               City Name *
             </label>
             <input
@@ -141,19 +141,19 @@ export default function EditCityDialog({ isOpen, onClose, city }: EditCityDialog
               name="city_name"
               value={formData.city_name}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                errors.city_name ? 'border-red-300' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                errors.city_name ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Enter city name"
               disabled={isLoading}
             />
             {errors.city_name && (
-              <p className="mt-1 text-sm text-red-600">{errors.city_name}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.city_name}</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="city_state" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="city_state" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               State *
             </label>
             <input
@@ -162,14 +162,14 @@ export default function EditCityDialog({ isOpen, onClose, city }: EditCityDialog
               name="city_state"
               value={formData.city_state}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                errors.city_state ? 'border-red-300' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                errors.city_state ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Enter state name"
               disabled={isLoading}
             />
             {errors.city_state && (
-              <p className="mt-1 text-sm text-red-600">{errors.city_state}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.city_state}</p>
             )}
           </div>
 
@@ -178,14 +178,14 @@ export default function EditCityDialog({ isOpen, onClose, city }: EditCityDialog
               type="button"
               onClick={handleClose}
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-800 bg-yellow-400 hover:bg-yellow-500 rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white bg-yellow-400 hover:bg-yellow-500 rounded-md transition-colors disabled:opacity-50"
             >
               {isLoading ? 'Updating...' : 'Update City'}
             </button>

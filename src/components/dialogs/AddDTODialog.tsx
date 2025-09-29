@@ -119,13 +119,13 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Add New DTO</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Add New DTO</h2>
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -135,14 +135,14 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errors.submit && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-md text-sm">
               {errors.submit}
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Date *
               </label>
               <input
@@ -151,18 +151,18 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.date ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.date ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 disabled={isLoading}
               />
               {errors.date && (
-                <p className="mt-1 text-sm text-red-600">{errors.date}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.date}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="no_of_applicant" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="no_of_applicant" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Number of Applicants *
               </label>
               <input
@@ -172,21 +172,21 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
                 value={formData.no_of_applicant}
                 onChange={handleInputChange}
                 min="0"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.no_of_applicant ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.no_of_applicant ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="0"
                 disabled={isLoading}
               />
               {errors.no_of_applicant && (
-                <p className="mt-1 text-sm text-red-600">{errors.no_of_applicant}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.no_of_applicant}</p>
               )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Amount *
               </label>
               <input
@@ -197,19 +197,19 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
                 onChange={handleInputChange}
                 min="0"
                 step="0.01"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.amount ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="0.00"
                 disabled={isLoading}
               />
               {errors.amount && (
-                <p className="mt-1 text-sm text-red-600">{errors.amount}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="pay_amount" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="pay_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Pay Amount *
               </label>
               <input
@@ -220,20 +220,20 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
                 onChange={handleInputChange}
                 min="0"
                 step="0.01"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-                  errors.pay_amount ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                  errors.pay_amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="0.00"
                 disabled={isLoading}
               />
               {errors.pay_amount && (
-                <p className="mt-1 text-sm text-red-600">{errors.pay_amount}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.pay_amount}</p>
               )}
             </div>
           </div>
 
           <div>
-            <label htmlFor="receipt" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="receipt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Receipt Image (Optional)
             </label>
             <input
@@ -242,11 +242,11 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
               name="receipt"
               onChange={handleFileChange}
               accept="image/*,.pdf"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white"
               disabled={isLoading}
             />
             {formData.receipt && (
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 Selected: {formData.receipt.name}
               </p>
             )}
@@ -257,14 +257,14 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
               type="button"
               onClick={handleClose}
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-800 bg-yellow-400 hover:bg-yellow-500 rounded-md transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-800 dark:text-gray-900 bg-yellow-400 hover:bg-yellow-500 rounded-md transition-colors disabled:opacity-50"
             >
               {isLoading ? 'Creating...' : 'Create DTO'}
             </button>

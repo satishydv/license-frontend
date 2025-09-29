@@ -115,3 +115,36 @@ export function useRolePermissions() {
     canDeleteRoles: hasPermission('roles:delete'),
   };
 }
+
+export function useVendorPermissions() {
+  const { hasPermission } = usePermissions();
+  
+  return {
+    canCreateVendors: hasPermission('vendors:create'),
+    canReadVendors: hasPermission('vendors:read'),
+    canUpdateVendors: hasPermission('vendors:update'),
+    canDeleteVendors: hasPermission('vendors:delete'),
+  };
+}
+
+export function useDTOPermissions() {
+  const { hasPermission } = usePermissions();
+  
+  return {
+    canCreateDTO: hasPermission('dto:create'),
+    canReadDTO: hasPermission('dto:read'),
+    canUpdateDTO: hasPermission('dto:update'),
+    canDeleteDTO: hasPermission('dto:delete'),
+  };
+}
+
+export function useCityPermissions() {
+  const { hasPermission } = usePermissions();
+  
+  return {
+    canCreateCities: hasPermission('cities:create'),
+    canReadCities: hasPermission('cities:read'),
+    canUpdateCities: hasPermission('cities:update'),
+    canDeleteCities: hasPermission('cities:delete'),
+  };
+}

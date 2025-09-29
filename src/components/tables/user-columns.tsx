@@ -67,6 +67,14 @@ export const createUserColumns = (onEdit?: (user: User) => void, onDelete?: (use
     },
   },
   {
+    accessorKey: "phone_no",
+    header: "Phone Number",
+    cell: ({ row }) => {
+      const phoneNo = row.getValue("phone_no") as string | undefined
+      return phoneNo ? phoneNo : <span className="text-gray-400">-</span>
+    },
+  },
+  {
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {

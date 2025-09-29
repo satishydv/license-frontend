@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useVendors } from '@/contexts/VendorContext';
-import { usePermissions } from '@/contexts/PermissionContext';
+import { useVendorPermissions } from '@/contexts/PermissionContext';
 import { DataTable } from '@/components/tables/data-table';
 import { createVendorColumns } from '@/components/tables/vendor-columns';
 import AddVendorDialog from '@/components/dialogs/AddVendorDialog';
@@ -20,20 +20,29 @@ import {
 
 export default function VendorsPage() {
   const { vendors, isLoading, deleteVendor, pagination, currentPage, setPage } = useVendors();
-  const { hasPermission } = usePermissions();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
 
-  // Check permissions - For now, allow all operations for testing
-  // TODO: Add proper permission checking
-  const canCreateVendors = true; // hasPermission('vendors:create');
-  const canReadVendors = true; // hasPermission('vendors:read');
-  const canUpdateVendors = true; // hasPermission('vendors:update');
-  const canDeleteVendors = true; // hasPermission('vendors:delete');
+  // Check permissions
+  const { canCreateVendors, canReadVendors, canUpdateVendors, canDeleteVendors } = useVendorPermissions();
 
-  // For now, always allow access for testing
-  // TODO: Add proper permission checking
+  // Check if user has permission to read vendors
+  if (!canReadVendors) {
+    return (
+      <div className="container mx-auto py-10">
+        <div className="text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+            <div className="text-red-600 text-6xl mb-4">🚫</div>
+            <h2 className="text-xl font-semibold text-red-800 mb-2">Access Denied</h2>
+            <p className="text-red-600">
+              You don&apos;t have permission to view vendors. Please contact your administrator.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleEdit = (vendor: Vendor) => {
     setEditingVendor(vendor);

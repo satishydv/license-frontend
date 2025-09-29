@@ -17,11 +17,13 @@ interface CityContextType {
     has_prev: boolean;
   } | null;
   currentPage: number;
+  searchTerm: string;
   createCity: (cityName: string, cityState: string) => Promise<void>;
   updateCity: (id: number, cityName: string, cityState: string) => Promise<void>;
   deleteCity: (id: number) => Promise<void>;
-  refreshCities: (page?: number) => Promise<void>;
+  refreshCities: (page?: number, search?: string) => Promise<void>;
   setPage: (page: number) => void;
+  handleSearch: (search: string) => void;
 }
 
 const CityContext = createContext<CityContextType | undefined>(undefined);
@@ -42,12 +44,13 @@ export function CityProvider({ children }: CityProviderProps) {
     has_prev: boolean;
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
   const { hasPermission } = usePermissions();
 
-  const refreshCities = async (page: number = currentPage) => {
+  const refreshCities = async (page: number = currentPage, search: string = searchTerm) => {
     try {
       console.log('📋 Required permission for getCities: cities:read');
-      const response = await apiService.getCities(page, 100);
+      const response = await apiService.getCities(page, 100, search);
       setCities(response.cities);
       setPagination(response.pagination);
       setCurrentPage(page);
@@ -58,7 +61,13 @@ export function CityProvider({ children }: CityProviderProps) {
 
   const setPage = (page: number) => {
     setCurrentPage(page);
-    refreshCities(page);
+    refreshCities(page, searchTerm);
+  };
+
+  const handleSearch = (search: string) => {
+    setSearchTerm(search);
+    setCurrentPage(1); // Reset to first page when searching
+    refreshCities(1, search);
   };
 
   useEffect(() => {
@@ -105,11 +114,13 @@ export function CityProvider({ children }: CityProviderProps) {
     isLoading,
     pagination,
     currentPage,
+    searchTerm,
     createCity,
     updateCity,
     deleteCity,
     refreshCities,
     setPage,
+    handleSearch,
   };
 
   return <CityContext.Provider value={value}>{children}</CityContext.Provider>;

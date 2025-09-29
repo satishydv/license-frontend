@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useCities } from '@/contexts/CityContext';
-import { usePermissions } from '@/contexts/PermissionContext';
+import { useCityPermissions } from '@/contexts/PermissionContext';
 import { DataTable } from '@/components/tables/data-table';
 import { createCityColumns } from '@/components/tables/city-columns';
 import AddCityDialog from '@/components/dialogs/AddCityDialog';
 import EditCityDialog from '@/components/dialogs/EditCityDialog';
 import { City } from '@/types/city';
+import { Input } from '@/components/ui/input';
 import {
   Pagination,
   PaginationContent,
@@ -19,21 +20,57 @@ import {
 } from "@/components/ui/pagination";
 
 export default function CityPage() {
-  const { cities, isLoading, deleteCity, pagination, currentPage, setPage } = useCities();
-  const { hasPermission } = usePermissions();
+  const { cities, isLoading, deleteCity, pagination, currentPage, setPage, searchTerm, handleSearch } = useCities();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingCity, setEditingCity] = useState<City | null>(null);
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
 
-  // Check permissions - For now, allow all operations for testing
-  // TODO: Add proper permission checking
-  const canCreateCities = true; // hasPermission('cities:create');
-  const canReadCities = true; // hasPermission('cities:read');
-  const canUpdateCities = true; // hasPermission('cities:update');
-  const canDeleteCities = true; // hasPermission('cities:delete');
+  // Check permissions
+  const { canCreateCities, canReadCities, canUpdateCities, canDeleteCities } = useCityPermissions();
 
-  // For now, always allow access for testing
-  // TODO: Add proper permission checking
+  // Debounced search functionality
+  const debouncedSearch = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout;
+      return (searchValue: string) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          handleSearch(searchValue);
+        }, 500); // 500ms delay
+      };
+    })(),
+    [handleSearch]
+  );
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalSearchTerm(value);
+    debouncedSearch(value);
+  };
+
+  // Sync local search term with context when it changes
+  useEffect(() => {
+    setLocalSearchTerm(searchTerm);
+  }, [searchTerm]);
+
+  // Check if user has permission to read cities
+  if (!canReadCities) {
+    return (
+      <div className="container mx-auto py-10">
+        <div className="text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+            <div className="text-red-600 text-6xl mb-4">🚫</div>
+            <h2 className="text-xl font-semibold text-red-800 mb-2">Access Denied</h2>
+            <p className="text-red-600">
+              You don&apos;t have permission to view cities. Please contact your administrator.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleEdit = (city: City) => {
     setEditingCity(city);
@@ -86,11 +123,22 @@ export default function CityPage() {
         )}
       </div>
 
+      {/* Custom Search Input */}
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search cities by name or state..."
+          value={localSearchTerm}
+          onChange={handleSearchChange}
+          className="max-w-sm"
+        />
+      </div>
+
       <DataTable 
         columns={columns} 
         data={cities} 
-        searchKey="city_name"
-        searchPlaceholder="Filter cities..."
+        searchKey="" // Disable built-in search
+        searchPlaceholder=""
       />
 
       {/* Pagination */}

@@ -76,13 +76,25 @@ const items = [
     title: "city",
     url: "/dashboard/city",
     icon: Building2,
-    permission: null, // No permission required for search
+    permission: "cities:read",
   },
   {
     title: "Apply",
     url: "/dashboard/apply",
     icon: File,
     permission: null, // No permission required for search
+  },
+  {
+    title: "Vendors",
+    url: "/dashboard/vendors",
+    icon: Users,
+    permission: "vendors:read",
+  },
+  {
+    title: "DTO",
+    url: "/dashboard/dto",
+    icon: FileText,
+    permission: "dto:read",
   },
   {
     title: "Light to Heavy",
@@ -127,6 +139,18 @@ const reportSubItems = [
     title: "Customer",
     url: "/dashboard/customer-report",
     icon: User,
+    permission: null,
+  },
+  {
+    title: "DTO Report",
+    url: "/dashboard/dto-report",
+    icon: FileText,
+    permission: null,
+  },
+  {
+    title: "Vendor Report",
+    url: "/dashboard/vendor-report",
+    icon: Users,
     permission: null,
   },
 ];
@@ -191,7 +215,7 @@ const AppSidebar = () => {
               })}
               
               {/* Reports Collapsible Menu */}
-              <Collapsible defaultOpen className="group/collapsible">
+              <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton>

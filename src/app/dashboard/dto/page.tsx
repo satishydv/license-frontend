@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useDTOs } from '@/contexts/DTOContext';
-import { usePermissions } from '@/contexts/PermissionContext';
+import { useDTOPermissions } from '@/contexts/PermissionContext';
 import { DataTable } from '@/components/tables/data-table';
 import { createDTOColumns } from '@/components/tables/dto-columns';
 import AddDTODialog from '@/components/dialogs/AddDTODialog';
@@ -20,20 +20,30 @@ import {
 
 export default function DTOPage() {
   const { dtos, isLoading, deleteDTO, pagination, currentPage, setPage } = useDTOs();
-  const { hasPermission } = usePermissions();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingDTO, setEditingDTO] = useState<DTO | null>(null);
 
-  // Check permissions - For now, allow all operations for testing
-  // TODO: Add proper permission checking
-  const canCreateDTOs = true; // hasPermission('dtos:create');
-  const canReadDTOs = true; // hasPermission('dtos:read');
-  const canUpdateDTOs = true; // hasPermission('dtos:update');
-  const canDeleteDTOs = true; // hasPermission('dtos:delete');
+  // Check permissions
+  const { canCreateDTO, canReadDTO, canUpdateDTO, canDeleteDTO } = useDTOPermissions();
 
-  // For now, always allow access for testing
-  // TODO: Add proper permission checking
+  // Check if user has permission to read DTOs
+  if (!canReadDTO) {
+    return (
+      <div className="container mx-auto py-10">
+        <div className="text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+            <div className="text-red-600 text-6xl mb-4">🚫</div>
+            <h2 className="text-xl font-semibold text-red-800 mb-2">Access Denied</h2>
+            <p className="text-red-600">
+              You don&apos;t have permission to view DTOs. Please contact your administrator.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   const handleEdit = (dto: DTO) => {
     setEditingDTO(dto);
@@ -52,8 +62,8 @@ export default function DTOPage() {
   };
 
   const columns = createDTOColumns(
-    canUpdateDTOs ? handleEdit : undefined, 
-    canDeleteDTOs ? handleDelete : undefined
+    canUpdateDTO ? handleEdit : undefined, 
+    canDeleteDTO ? handleDelete : undefined
   );
 
   if (isLoading) {
@@ -76,7 +86,7 @@ export default function DTOPage() {
             Manage and view all DTO records in the system.
           </p>
         </div>
-        {canCreateDTOs && (
+        {canCreateDTO && (
           <button
             onClick={() => setIsAddDialogOpen(true)}
             className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium px-4 py-2 rounded-md transition-colors"
@@ -169,14 +179,14 @@ export default function DTOPage() {
         </div>
       )}
 
-      {canCreateDTOs && (
+      {canCreateDTO && (
         <AddDTODialog 
           isOpen={isAddDialogOpen} 
           onClose={() => setIsAddDialogOpen(false)} 
         />
       )}
 
-      {canUpdateDTOs && (
+      {canUpdateDTO && (
         <EditDTODialog
           isOpen={isEditDialogOpen}
           onClose={() => {

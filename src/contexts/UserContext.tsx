@@ -7,8 +7,8 @@ import { usePermissions } from './PermissionContext';
 interface UserContextType {
   users: User[];
   isLoading: boolean;
-  createUser: (name: string, email: string, password: string, role: string, status?: string) => Promise<void>;
-  updateUser: (id: number, name: string, email: string, role: string, status: string, password?: string) => Promise<void>;
+  createUser: (name: string, email: string, password: string, role: string, status?: string, phone_no?: string) => Promise<void>;
+  updateUser: (id: number, name: string, email: string, role: string, status: string, password?: string, phone_no?: string) => Promise<void>;
   deleteUser: (id: number) => Promise<void>;
   refreshUsers: () => Promise<void>;
 }
@@ -47,18 +47,18 @@ export function UserProvider({ children }: UserProviderProps) {
     loadUsers();
   }, [hasPermission]);
 
-  const createUser = async (name: string, email: string, password: string, role: string, status: string = 'active') => {
+  const createUser = async (name: string, email: string, password: string, role: string, status: string = 'active', phone_no?: string) => {
     try {
-      const newUser = await apiService.createUser({ name, email, password, role, status });
+      const newUser = await apiService.createUser({ name, email, password, role, status, phone_no });
       setUsers(prev => [...prev, newUser]);
     } catch (error) {
       throw error;
     }
   };
 
-  const updateUser = async (id: number, name: string, email: string, role: string, status: string, password?: string) => {
+  const updateUser = async (id: number, name: string, email: string, role: string, status: string, password?: string, phone_no?: string) => {
     try {
-      const updatedUser = await apiService.updateUser(id, { name, email, role, status, password });
+      const updatedUser = await apiService.updateUser(id, { name, email, role, status, password, phone_no });
       setUsers(prev => prev.map(user => user.id === id ? updatedUser : user));
     } catch (error) {
       throw error;

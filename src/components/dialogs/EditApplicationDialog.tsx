@@ -336,13 +336,13 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto m-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto m-4">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Edit Application</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Edit Application</h2>
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
               disabled={isLoading}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,7 +366,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                   <SelectItem value="correction">Correction</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.licenseType && <p className="text-sm text-red-600">{errors.licenseType}</p>}
+              {errors.licenseType && <p className="text-sm text-red-600 dark:text-red-400">{errors.licenseType}</p>}
             </div>
 
             {/* Personal Details */}
@@ -379,7 +379,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                 />
-                {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+                {errors.name && <p className="text-sm text-red-600 dark:text-red-400">{errors.name}</p>}
               </div>
 
               <div className="space-y-2">
@@ -390,7 +390,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                   value={formData.fatherName}
                   onChange={(e) => handleInputChange('fatherName', e.target.value)}
                 />
-                {errors.fatherName && <p className="text-sm text-red-600">{errors.fatherName}</p>}
+                {errors.fatherName && <p className="text-sm text-red-600 dark:text-red-400">{errors.fatherName}</p>}
               </div>
 
               <div className="space-y-2">
@@ -401,7 +401,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                   value={formData.contactNo}
                   onChange={(e) => handleInputChange('contactNo', e.target.value)}
                 />
-                {errors.contactNo && <p className="text-sm text-red-600">{errors.contactNo}</p>}
+                {errors.contactNo && <p className="text-sm text-red-600 dark:text-red-400">{errors.contactNo}</p>}
               </div>
 
               <div className="space-y-2">
@@ -412,7 +412,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                   value={formData.dob}
                   onChange={(e) => handleInputChange('dob', e.target.value)}
                 />
-                {errors.dob && <p className="text-sm text-red-600">{errors.dob}</p>}
+                {errors.dob && <p className="text-sm text-red-600 dark:text-red-400">{errors.dob}</p>}
               </div>
 
               <div className="space-y-2">
@@ -432,7 +432,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                     <SelectItem value="O-">O-</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.bloodGroup && <p className="text-sm text-red-600">{errors.bloodGroup}</p>}
+                {errors.bloodGroup && <p className="text-sm text-red-600 dark:text-red-400">{errors.bloodGroup}</p>}
               </div>
             </div>
 
@@ -452,7 +452,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.state && <p className="text-sm text-red-600">{errors.state}</p>}
+                {errors.state && <p className="text-sm text-red-600 dark:text-red-400">{errors.state}</p>}
               </div>
 
               <div className="space-y-2">
@@ -479,7 +479,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.city && <p className="text-sm text-red-600">{errors.city}</p>}
+                {errors.city && <p className="text-sm text-red-600 dark:text-red-400">{errors.city}</p>}
               </div>
             </div>
 
@@ -493,7 +493,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                   value={formData.applicationNo}
                   onChange={(e) => handleInputChange('applicationNo', e.target.value)}
                 />
-                {errors.applicationNo && <p className="text-sm text-red-600">{errors.applicationNo}</p>}
+                {errors.applicationNo && <p className="text-sm text-red-600 dark:text-red-400">{errors.applicationNo}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -505,7 +505,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                     value={formData.licenseNo}
                     onChange={(e) => handleInputChange('licenseNo', e.target.value)}
                   />
-                  {errors.licenseNo && <p className="text-sm text-red-600">{errors.licenseNo}</p>}
+                  {errors.licenseNo && <p className="text-sm text-red-600 dark:text-red-400">{errors.licenseNo}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -516,7 +516,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                     value={formData.issueDate}
                     onChange={(e) => handleInputChange('issueDate', e.target.value)}
                   />
-                  {errors.issueDate && <p className="text-sm text-red-600">{errors.issueDate}</p>}
+                  {errors.issueDate && <p className="text-sm text-red-600 dark:text-red-400">{errors.issueDate}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -527,7 +527,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                     value={formData.expiryDate}
                     onChange={(e) => handleInputChange('expiryDate', e.target.value)}
                   />
-                  {errors.expiryDate && <p className="text-sm text-red-600">{errors.expiryDate}</p>}
+                  {errors.expiryDate && <p className="text-sm text-red-600 dark:text-red-400">{errors.expiryDate}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -538,7 +538,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                     value={formData.coverClass}
                     onChange={(e) => handleInputChange('coverClass', e.target.value)}
                   />
-                  {errors.coverClass && <p className="text-sm text-red-600">{errors.coverClass}</p>}
+                  {errors.coverClass && <p className="text-sm text-red-600 dark:text-red-400">{errors.coverClass}</p>}
                 </div>
               </div>
             </div>
@@ -553,7 +553,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                   value={formData.amount}
                   onChange={(e) => handleInputChange('amount', e.target.value)}
                 />
-                {errors.amount && <p className="text-sm text-red-600">{errors.amount}</p>}
+                {errors.amount && <p className="text-sm text-red-600 dark:text-red-400">{errors.amount}</p>}
               </div>
 
               <div className="space-y-2">
@@ -581,13 +581,13 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                     <SelectItem value="bank-transfer">Transfer to Bank</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.modeOfPayment && <p className="text-sm text-red-600">{errors.modeOfPayment}</p>}
+                {errors.modeOfPayment && <p className="text-sm text-red-600 dark:text-red-400">{errors.modeOfPayment}</p>}
               </div>
             </div>
 
             {errors.submit && (
               <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                <p className="text-sm text-red-600">{errors.submit}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.submit}</p>
               </div>
             )}
 

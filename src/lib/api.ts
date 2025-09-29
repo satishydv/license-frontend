@@ -332,7 +332,7 @@ class ApiService {
     throw new Error(response.message || 'Failed to get users');
   }
 
-  async createUser(userData: { name: string; email: string; password: string; role: string; status?: string }): Promise<User> {
+  async createUser(userData: { name: string; email: string; password: string; role: string; status?: string; phone_no?: string }): Promise<User> {
     const response = await this.request<{ user: ApiUser }>('/users/create', {
       method: 'POST',
       body: JSON.stringify(userData),
@@ -345,7 +345,7 @@ class ApiService {
     throw new Error(response.message || 'Failed to create user');
   }
 
-  async updateUser(id: number, userData: { name: string; email: string; role: string; status: string; password?: string }): Promise<User> {
+  async updateUser(id: number, userData: { name: string; email: string; role: string; status: string; password?: string; phone_no?: string }): Promise<User> {
     const response = await this.request<{ user: ApiUser }>(`/users/${id}/update`, {
       method: 'PUT',
       body: JSON.stringify(userData),
@@ -659,7 +659,7 @@ class ApiService {
   }
 
   // City management methods
-  async getCities(page: number = 1, limit: number = 100): Promise<{
+  async getCities(page: number = 1, limit: number = 100, search: string = ''): Promise<{
     cities: City[];
     pagination: {
       current_page: number;
@@ -675,9 +675,14 @@ class ApiService {
       limit: limit.toString()
     });
     
+    if (search.trim()) {
+      params.append('search', search.trim());
+    }
+    
     console.log('🌐 Making getCities request:', {
       page,
       limit,
+      search,
       params: params.toString(),
       fullUrl: `${this.baseURL}/cities?${params.toString()}`
     });
@@ -1021,6 +1026,74 @@ class ApiService {
     }
 
     throw new Error(response.message || 'Failed to get DTO');
+  }
+
+  async getDTOReport(fromDate: string, toDate: string): Promise<{
+    total_amount: number;
+    total_pay_amount: number;
+    total_applicants: number;
+    dto_count: number;
+  }> {
+    const params = new URLSearchParams({
+      from_date: fromDate,
+      to_date: toDate
+    });
+    
+    console.log('🌐 Making getDTOReport request:', {
+      fromDate,
+      toDate,
+      params: params.toString(),
+      fullUrl: `${this.baseURL}/dto/report?${params.toString()}`
+    });
+    
+    const response = await this.request<{
+      total_amount: number;
+      total_pay_amount: number;
+      total_applicants: number;
+      dto_count: number;
+    }>(`/dto/report?${params.toString()}`);
+
+    console.log('🌐 getDTOReport response:', response);
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'Failed to get DTO report');
+  }
+
+  async getVendorReport(fromDate: string, toDate: string): Promise<{
+    vendor_count: number;
+    total_amount: number;
+    total_pay_amount: number;
+    total_customers: number;
+  }> {
+    const params = new URLSearchParams({
+      from_date: fromDate,
+      to_date: toDate
+    });
+    
+    console.log('🌐 Making getVendorReport request:', {
+      fromDate,
+      toDate,
+      params: params.toString(),
+      fullUrl: `${this.baseURL}/vendors/report?${params.toString()}`
+    });
+    
+    const response = await this.request<{
+      vendor_count: number;
+      total_amount: number;
+      total_pay_amount: number;
+      total_customers: number;
+    }>(`/vendors/report?${params.toString()}`);
+
+    console.log('🌐 getVendorReport response:', response);
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'Failed to get vendor report');
   }
 }
 
