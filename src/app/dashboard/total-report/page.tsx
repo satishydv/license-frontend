@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { apiService } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface IncomeData {
   totalIncome: number
@@ -22,6 +23,7 @@ const TotalIncomePage = () => {
   const [incomeData, setIncomeData] = useState<IncomeData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { isAuthenticated } = useAuth()
 
   // Set default dates to current month
   useEffect(() => {
@@ -33,12 +35,12 @@ const TotalIncomePage = () => {
     setToDate(lastDay)
   }, [])
 
-  // Fetch data when dates change
+  // Fetch data when dates change and user is authenticated
   useEffect(() => {
-    if (fromDate && toDate) {
+    if (fromDate && toDate && isAuthenticated) {
       fetchIncomeData()
     }
-  }, [fromDate, toDate])
+  }, [fromDate, toDate, isAuthenticated])
 
   const fetchIncomeData = async () => {
     if (!fromDate || !toDate) return

@@ -23,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAuth } from '@/contexts/AuthContext'
 
 interface CustomerSearchParams {
   from_date?: string
@@ -252,8 +253,14 @@ const CustomerReportPage = () => {
   const [error, setError] = useState<string | null>(null)
   const [hasSearched, setHasSearched] = useState(false)
   const [usingMockData, setUsingMockData] = useState(false)
+  const { isAuthenticated } = useAuth()
 
   const handleSearch = async () => {
+    if (!isAuthenticated) {
+      setError('Please log in to search for customers')
+      return
+    }
+
     try {
       setLoading(true)
       setError(null)

@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { apiService } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface DueData {
   totalDues: number
@@ -23,6 +24,7 @@ const DueReportPage = () => {
   const [dueData, setDueData] = useState<DueData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { isAuthenticated } = useAuth()
 
   // Set default dates to current month
   useEffect(() => {
@@ -34,12 +36,12 @@ const DueReportPage = () => {
     setToDate(lastDay)
   }, [])
 
-  // Fetch data when dates change
+  // Fetch data when dates change and user is authenticated
   useEffect(() => {
-    if (fromDate && toDate) {
+    if (fromDate && toDate && isAuthenticated) {
       fetchDueData()
     }
-  }, [fromDate, toDate])
+  }, [fromDate, toDate, isAuthenticated])
 
   const fetchDueData = async () => {
     if (!fromDate || !toDate) return

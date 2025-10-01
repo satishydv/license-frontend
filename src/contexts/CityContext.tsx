@@ -73,14 +73,15 @@ export function CityProvider({ children }: CityProviderProps) {
   useEffect(() => {
     const loadCities = async () => {
       setIsLoading(true);
-      // For now, load cities regardless of permission for testing
-      // TODO: Add proper permission checking
-      await refreshCities();
+      // Only load cities if user has permission
+      if (hasPermission('cities:read')) {
+        await refreshCities();
+      }
       setIsLoading(false);
     };
 
     loadCities();
-  }, []);
+  }, [hasPermission]);
 
   const createCity = async (cityName: string, cityState: string) => {
     try {

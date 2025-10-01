@@ -64,14 +64,15 @@ export function DTOProvider({ children }: DTOProviderProps) {
   useEffect(() => {
     const loadDTOs = async () => {
       setIsLoading(true);
-      // For now, load DTOs regardless of permission for testing
-      // TODO: Add proper permission checking
-      await refreshDTOs();
+      // Only load DTOs if user has permission
+      if (hasPermission('dto:read')) {
+        await refreshDTOs();
+      }
       setIsLoading(false);
     };
 
     loadDTOs();
-  }, []);
+  }, [hasPermission]);
 
   const createDTO = async (dtoData: Omit<DTO, 'dto_id' | 'created_at' | 'updated_at'> & { receipt?: File | null }) => {
     try {

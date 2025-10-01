@@ -64,14 +64,15 @@ export function VendorProvider({ children }: VendorProviderProps) {
   useEffect(() => {
     const loadVendors = async () => {
       setIsLoading(true);
-      // For now, load vendors regardless of permission for testing
-      // TODO: Add proper permission checking
-      await refreshVendors();
+      // Only load vendors if user has permission
+      if (hasPermission('vendors:read')) {
+        await refreshVendors();
+      }
       setIsLoading(false);
     };
 
     loadVendors();
-  }, []);
+  }, [hasPermission]);
 
   const createVendor = async (vendorData: Omit<Vendor, 'vendor_id' | 'created_at' | 'updated_at'> & { receipt_image_path?: File | null }) => {
     try {

@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { apiService } from '@/lib/api'
 import { Vendor } from '@/types/vendor'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface VendorReportData {
   totalVendors: number
@@ -36,6 +37,7 @@ const VendorReportPage = () => {
   const [vendorData, setVendorData] = useState<VendorReportData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { isAuthenticated } = useAuth()
 
   // Set default dates to current month
   useEffect(() => {
@@ -47,12 +49,12 @@ const VendorReportPage = () => {
     setToDate(lastDay)
   }, [])
 
-  // Fetch data when dates change
+  // Fetch data when dates change and user is authenticated
   useEffect(() => {
-    if (fromDate && toDate) {
+    if (fromDate && toDate && isAuthenticated) {
       fetchVendorData()
     }
-  }, [fromDate, toDate])
+  }, [fromDate, toDate, isAuthenticated])
 
   const fetchVendorData = async () => {
     if (!fromDate || !toDate) return

@@ -74,7 +74,6 @@ export function PermissionProvider({ children }: { children: React.ReactNode }) 
     isLoading,
     hasPermission,
     hasAnyPermission,
-    hasAllPermissions,
     refreshPermissions,
   };
 

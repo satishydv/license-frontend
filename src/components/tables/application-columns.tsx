@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,20 +38,44 @@ type Application = {
 }
 
 export const createApplicationColumns = (onEdit?: (application: Application) => void, onDelete?: (application: Application) => void, onView?: (application: Application) => void): ColumnDef<Application>[] => [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'father_name', header: 'Father Name' },
-  { accessorKey: 'contact_no', header: 'Contact No' },
-  { accessorKey: 'city', header: 'City' },
-  { accessorKey: 'application_no', header: 'Application No' },
-  { accessorKey: 'license_no', header: 'License No' },
-  { accessorKey: 'issue_date', header: 'Issue Date' },
-  { accessorKey: 'expiry_date', header: 'Expiry Date' },
-  { accessorKey: 'amount', header: 'Amount' },
-  { accessorKey: 'pay_amount', header: 'Pay Amount' },
-  { accessorKey: 'mode_of_payment', header: 'Payment Mode' },
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    size: 50,
+  },
+  { accessorKey: 'name', header: 'Name', size: 120 },
+  { accessorKey: 'father_name', header: 'Father Name', size: 130 },
+  { accessorKey: 'contact_no', header: 'Contact No', size: 120 },
+  { accessorKey: 'city', header: 'City', size: 100 },
+  { accessorKey: 'application_no', header: 'Application No', size: 130 },
+  { accessorKey: 'license_no', header: 'License No', size: 130 },
+  { accessorKey: 'issue_date', header: 'Issue Date', size: 110 },
+  { accessorKey: 'expiry_date', header: 'Expiry Date', size: 110 },
+  { accessorKey: 'amount', header: 'Amount', size: 100 },
+  { accessorKey: 'pay_amount', header: 'Pay Amount', size: 110 },
+  { accessorKey: 'mode_of_payment', header: 'Payment Mode', size: 120 },
   {
     id: "actions",
     enableHiding: false,
+    size: 80,
     cell: ({ row }) => {
       const application = row.original
 

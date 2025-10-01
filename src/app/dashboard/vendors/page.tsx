@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useVendors } from '@/contexts/VendorContext';
 import { useVendorPermissions } from '@/contexts/PermissionContext';
-import { DataTable } from '@/components/tables/data-table';
+import { VendorsDataTable } from '@/components/tables/vendors-data-table';
 import { createVendorColumns } from '@/components/tables/vendor-columns';
 import AddVendorDialog from '@/components/dialogs/AddVendorDialog';
 import EditVendorDialog from '@/components/dialogs/EditVendorDialog';
@@ -77,30 +77,32 @@ export default function VendorsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="container mx-auto py-6 px-4 max-w-7xl">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Vendors</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold">Vendors</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Manage and view all vendors in the system.
           </p>
         </div>
         {canCreateVendors && (
           <button
             onClick={() => setIsAddDialogOpen(true)}
-            className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium px-4 py-2 rounded-md transition-colors"
+            className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-medium px-4 py-2 rounded-md transition-colors w-full sm:w-auto"
           >
             Add New Vendor
           </button>
         )}
       </div>
 
-      <DataTable 
-        columns={columns} 
-        data={vendors} 
-        searchKey="name"
-        searchPlaceholder="Filter vendors..."
-      />
+      <div className="w-full overflow-hidden">
+        <VendorsDataTable 
+          columns={columns} 
+          data={vendors} 
+          searchKey="name"
+          searchPlaceholder="Filter vendors..."
+        />
+      </div>
 
       {/* Pagination */}
       {pagination && pagination.total_pages > 1 && (

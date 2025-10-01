@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { apiService } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface DTOReportData {
   totalAmount: number
@@ -28,6 +29,7 @@ const DTOReportPage = () => {
   const [dtoData, setDtoData] = useState<DTOReportData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { isAuthenticated } = useAuth()
 
   // Set default dates to current month
   useEffect(() => {
@@ -39,12 +41,12 @@ const DTOReportPage = () => {
     setToDate(lastDay)
   }, [])
 
-  // Fetch data when dates change
+  // Fetch data when dates change and user is authenticated
   useEffect(() => {
-    if (fromDate && toDate) {
+    if (fromDate && toDate && isAuthenticated) {
       fetchDTOData()
     }
-  }, [fromDate, toDate])
+  }, [fromDate, toDate, isAuthenticated])
 
   const fetchDTOData = async () => {
     if (!fromDate || !toDate) return

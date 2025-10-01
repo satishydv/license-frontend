@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { DTO } from "@/types/dto"
+import { getBaseUrl } from "@/lib/utils"
 
 export const createDTOColumns = (onEdit?: (dto: DTO) => void, onDelete?: (dto: DTO) => void): ColumnDef<DTO>[] => [
   {
@@ -135,13 +136,15 @@ export const createDTOColumns = (onEdit?: (dto: DTO) => void, onDelete?: (dto: D
       if (!receiptPath) {
         return <div className="text-gray-400">No receipt</div>;
       }
+      const baseUrl = getBaseUrl();
+      const imageUrl = `${baseUrl}/public/payment/${receiptPath}`;
       return (
         <div className="flex items-center space-x-2">
           <img 
-            src={`http://localhost/driving-license/public/payment/${receiptPath}`}
+            src={imageUrl}
             alt="Receipt"
             className="w-8 h-8 object-cover rounded cursor-pointer"
-            onClick={() => window.open(`http://localhost/driving-license/public/payment/${receiptPath}`, '_blank')}
+            onClick={() => window.open(imageUrl, '_blank')}
           />
         </div>
       );

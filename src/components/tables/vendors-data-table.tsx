@@ -32,22 +32,27 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-interface DataTableProps<TData, TValue> {
+interface VendorsDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   searchKey?: string
   searchPlaceholder?: string
 }
 
-export function DataTable<TData, TValue>({
+export function VendorsDataTable<TData, TValue>({
   columns,
   data,
   searchKey,
   searchPlaceholder = "Filter...",
-}: DataTableProps<TData, TValue>) {
+}: VendorsDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    // Hide some columns by default to reduce table width
+    address: false,
+    receipt_image_path: false,
+    total_customer: false,
+  })
   const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
@@ -71,7 +76,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center py-4 gap-4">
         {searchKey && (
           <Input
             placeholder={searchPlaceholder}
@@ -79,12 +84,12 @@ export function DataTable<TData, TValue>({
             onChange={(event) =>
               table.getColumn(searchKey)?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-sm w-full sm:w-auto"
           />
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto w-full sm:w-auto">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -161,12 +166,12 @@ export function DataTable<TData, TValue>({
           </Table>
         </div>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground text-center sm:text-left">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        <div className="flex space-x-2 justify-center sm:justify-end">
           <Button
             variant="outline"
             size="sm"

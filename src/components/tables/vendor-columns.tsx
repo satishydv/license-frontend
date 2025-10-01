@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Vendor } from "@/types/vendor"
+import { getBaseUrl } from "@/lib/utils"
 
 export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?: (vendor: Vendor) => void): ColumnDef<Vendor>[] => [
   {
@@ -36,6 +37,7 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
     ),
     enableSorting: false,
     enableHiding: false,
+    size: 50,
   },
   {
     accessorKey: "vendor_id",
@@ -50,6 +52,7 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
         </Button>
       )
     },
+    size: 80,
   },
   {
     accessorKey: "name",
@@ -64,6 +67,7 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
         </Button>
       )
     },
+    size: 150,
   },
   {
     accessorKey: "phone_no",
@@ -78,6 +82,7 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
         </Button>
       )
     },
+    size: 120,
   },
   {
     accessorKey: "address",
@@ -95,11 +100,12 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
     cell: ({ row }) => {
       const address = row.getValue("address") as string;
       return (
-        <div className="max-w-[200px] truncate" title={address}>
+        <div className="max-w-[150px] truncate" title={address}>
           {address}
         </div>
       );
     },
+    size: 180,
   },
   {
     accessorKey: "amount",
@@ -122,6 +128,7 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
       }).format(amount);
       return <div className="font-medium">{formatted}</div>;
     },
+    size: 120,
   },
   {
     accessorKey: "pay_amount",
@@ -144,6 +151,7 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
       }).format(amount);
       return <div className="font-medium">{formatted}</div>;
     },
+    size: 120,
   },
   {
     accessorKey: "mode_of_payment",
@@ -167,6 +175,7 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
       };
       return <div className="capitalize">{modeLabels[mode] || mode}</div>;
     },
+    size: 120,
   },
   {
     accessorKey: "total_customer",
@@ -181,6 +190,7 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
         </Button>
       )
     },
+    size: 120,
   },
   {
     accessorKey: "receipt_image_path",
@@ -190,17 +200,20 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
       if (!receiptPath) {
         return <div className="text-gray-400">No receipt</div>;
       }
+      const baseUrl = getBaseUrl();
+      const imageUrl = `${baseUrl}/public/payment/${receiptPath}`;
       return (
         <div className="flex items-center space-x-2">
           <img 
-            src={`http://localhost/driving-license/public/payment/${receiptPath}`}
+            src={imageUrl}
             alt="Receipt"
             className="w-8 h-8 object-cover rounded cursor-pointer"
-            onClick={() => window.open(`http://localhost/driving-license/public/payment/${receiptPath}`, '_blank')}
+            onClick={() => window.open(imageUrl, '_blank')}
           />
         </div>
       );
     },
+    size: 100,
   },
   {
     id: "actions",
@@ -241,5 +254,6 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
         </DropdownMenu>
       )
     },
+    size: 80,
   },
 ]
