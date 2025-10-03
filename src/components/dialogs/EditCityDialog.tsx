@@ -132,27 +132,6 @@ export default function EditCityDialog({ isOpen, onClose, city }: EditCityDialog
           )}
 
           <div>
-            <label htmlFor="city_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              City Name *
-            </label>
-            <input
-              type="text"
-              id="city_name"
-              name="city_name"
-              value={formData.city_name}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
-                errors.city_name ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
-              }`}
-              placeholder="Enter city name"
-              disabled={isLoading}
-            />
-            {errors.city_name && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.city_name}</p>
-            )}
-          </div>
-
-          <div>
             <label htmlFor="city_state" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               State *
             </label>
@@ -170,6 +149,27 @@ export default function EditCityDialog({ isOpen, onClose, city }: EditCityDialog
             />
             {errors.city_state && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.city_state}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="city_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              City Name *
+            </label>
+            <input
+              type="text"
+              id="city_name"
+              name="city_name"
+              value={formData.city_name}
+              onChange={handleInputChange}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                errors.city_name ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder="Enter city name"
+              disabled={isLoading}
+            />
+            {errors.city_name && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.city_name}</p>
             )}
           </div>
 

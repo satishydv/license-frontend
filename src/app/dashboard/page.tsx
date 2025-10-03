@@ -115,18 +115,18 @@ const DashboardPage = () => {
         {/* Left Section - Metric Cards */}
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Total Applications */}
-          <Card>
+          <Card className="bg-gradient-to-br from-pink-500 to-pink-600 text-white border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
-              <BarChart3 className="h-8 w-8 text-blue-500" />
+              <CardTitle className="text-sm font-medium text-white">Total Applications</CardTitle>
+              <BarChart3 className="h-8 w-8 text-white" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatNumber(reportData.totalApplications)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-white">{formatNumber(reportData.totalApplications)}</div>
+              <p className="text-xs text-pink-100">
                 Compare with last month
               </p>
               <div className="flex items-center mt-2">
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                <span className="inline-flex items-center rounded-full bg-white/20 px-2 py-1 text-xs font-medium text-white">
                   +150
                 </span>
               </div>
@@ -134,18 +134,18 @@ const DashboardPage = () => {
           </Card>
 
           {/* Total Income */}
-          <Card>
+          <Card className="bg-gradient-to-br from-yellow-400 to-yellow-500 text-black border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Income</CardTitle>
-              <HandCoins className="h-8 w-8 text-blue-500" />
+              <CardTitle className="text-sm font-medium text-black">Total Income</CardTitle>
+              <HandCoins className="h-8 w-8 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(reportData.totalIncome)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-black">{formatCurrency(reportData.totalIncome)}</div>
+              <p className="text-xs text-gray-700">
                 Compare with last month
               </p>
               <div className="flex items-center mt-2">
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                <span className="inline-flex items-center rounded-full bg-black/10 px-2 py-1 text-xs font-medium text-black">
                   +80
                 </span>
               </div>
@@ -153,18 +153,18 @@ const DashboardPage = () => {
           </Card>
 
           {/* Total Dues */}
-          <Card>
+          <Card className="bg-gradient-to-br from-cyan-500 to-cyan-600 text-black border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Outstanding Dues</CardTitle>
-              <Building2 className="h-8 w-8 text-blue-500" />
+              <CardTitle className="text-sm font-medium text-black">Outstanding Dues</CardTitle>
+              <Building2 className="h-8 w-8 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(reportData.totalDues)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-black">{formatCurrency(reportData.totalDues)}</div>
+              <p className="text-xs text-gray-700">
                 Compare with last month
               </p>
               <div className="flex items-center mt-2">
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                <span className="inline-flex items-center rounded-full bg-black/10 px-2 py-1 text-xs font-medium text-black">
                   +30
                 </span>
               </div>
@@ -172,18 +172,18 @@ const DashboardPage = () => {
           </Card>
 
           {/* Total Paid */}
-          <Card>
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Collected</CardTitle>
-              <TrendingUp className="h-8 w-8 text-blue-500" />
+              <CardTitle className="text-sm font-medium text-white">Total Collected</CardTitle>
+              <TrendingUp className="h-8 w-8 text-white" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(reportData.totalPaid)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-white">{formatCurrency(reportData.totalPaid)}</div>
+              <p className="text-xs text-purple-100">
                 Compare with last month
               </p>
               <div className="flex items-center mt-2">
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                <span className="inline-flex items-center rounded-full bg-white/20 px-2 py-1 text-xs font-medium text-white">
                   +80
                 </span>
               </div>
@@ -220,22 +220,22 @@ const DashboardPage = () => {
       {/* Additional Reports Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Applications by Type */}
-        <Card>
+        <Card className="bg-gradient-to-br from-orange-300 to-pink-500 text-white border-0">
           <CardHeader>
-            <CardTitle>Applications by License Type</CardTitle>
-            <CardDescription>Distribution of applications by vehicle type</CardDescription>
+            <CardTitle className="text-white">Applications by License Type</CardTitle>
+            <CardDescription className="text-orange-100">Distribution of applications by vehicle type</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {reportData.applicationsByType.map((type, index) => (
                 <div key={type.type} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full bg-chart-${index + 1}`}></div>
-                    <span className="text-sm font-medium">{type.type}</span>
+                    <div className={`w-3 h-3 rounded-full bg-white/80`}></div>
+                    <span className="text-sm font-medium text-white">{type.type}</span>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold">{formatNumber(type.count)}</div>
-                    <div className="text-xs text-muted-foreground">{formatCurrency(type.amount)}</div>
+                    <div className="text-sm font-bold text-white">{formatNumber(type.count)}</div>
+                    <div className="text-xs text-orange-100">{formatCurrency(type.amount)}</div>
                   </div>
                 </div>
               ))}
@@ -244,10 +244,10 @@ const DashboardPage = () => {
         </Card>
 
         {/* Payment Methods Breakdown */}
-        <Card>
+        <Card className="bg-gradient-to-br from-cyan-300 to-purple-500 text-white border-0">
           <CardHeader>
-            <CardTitle>Payment Methods Breakdown</CardTitle>
-            <CardDescription>Revenue distribution by payment method</CardDescription>
+            <CardTitle className="text-white">Payment Methods Breakdown</CardTitle>
+            <CardDescription className="text-cyan-100">Revenue distribution by payment method</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -256,12 +256,12 @@ const DashboardPage = () => {
                 return (
                   <div key={method.method} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full bg-chart-${index + 1}`}></div>
-                      <span className="text-sm font-medium">{method.method}</span>
+                      <div className={`w-3 h-3 rounded-full bg-white/80`}></div>
+                      <span className="text-sm font-medium text-white">{method.method}</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-bold">{formatCurrency(method.amount)}</div>
-                      <div className="text-xs text-muted-foreground">{percentage}%</div>
+                      <div className="text-sm font-bold text-white">{formatCurrency(method.amount)}</div>
+                      <div className="text-xs text-cyan-100">{percentage}%</div>
                     </div>
                   </div>
                 )

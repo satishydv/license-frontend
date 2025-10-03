@@ -74,6 +74,12 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
         { id: 'cities:update', label: 'Update' },
         { id: 'cities:delete', label: 'Delete' },
       ]
+    },
+    {
+      table: 'Reports',
+      permissions: [
+        { id: 'reports:read', label: 'Read' },
+      ]
     }
   ];
 
@@ -247,34 +253,67 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Permissions *
             </label>
-            <div className={`space-y-4 max-h-64 overflow-y-auto ${
-              errors.permissions ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
+            <div className={`border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden ${
+              errors.permissions ? 'border-red-300 dark:border-red-500' : ''
             }`}>
-              {TABLE_PERMISSIONS.map((tableGroup) => (
-                <div key={tableGroup.table} className="border border-gray-200 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-800 dark:text-white mb-2">{tableGroup.table} Table</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {tableGroup.permissions.map((permission) => (
-                      <div key={permission.id} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id={`permission-${permission.id}`}
-                          checked={formData.permissions.includes(permission.id)}
-                          onChange={() => handlePermissionChange(permission.id)}
-                          className="mr-2 h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 dark:border-gray-600 rounded"
-                          disabled={isLoading}
-                        />
-                        <label 
-                          htmlFor={`permission-${permission.id}`} 
-                          className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
-                        >
-                          {permission.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+              {/* Table Header */}
+              <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <div className="grid grid-cols-5 gap-4 p-3">
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Permission</div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Create</div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Read</div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Update</div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Delete</div>
                 </div>
-              ))}
+              </div>
+              
+              {/* Table Body */}
+              <div className="max-h-64 overflow-y-auto">
+                {TABLE_PERMISSIONS.map((tableGroup) => (
+                  <div key={tableGroup.table} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                    <div className="grid grid-cols-5 gap-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                      {/* Table Name */}
+                      <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                        {tableGroup.table}
+                      </div>
+                      
+                      {/* Permission Checkboxes */}
+                      {tableGroup.table === 'Reports' ? (
+                        // Special handling for Reports - only show checkbox in Read column
+                        <>
+                          <div></div> {/* Create column - empty */}
+                          <div className="flex justify-center"> {/* Read column - checkbox */}
+                            <input
+                              type="checkbox"
+                              id="permission-reports:read"
+                              checked={formData.permissions.includes('reports:read')}
+                              onChange={() => handlePermissionChange('reports:read')}
+                              className="h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 dark:border-gray-600 rounded"
+                              disabled={isLoading}
+                            />
+                          </div>
+                          <div></div> {/* Update column - empty */}
+                          <div></div> {/* Delete column - empty */}
+                        </>
+                      ) : (
+                        // Normal handling for other tables
+                        tableGroup.permissions.map((permission) => (
+                          <div key={permission.id} className="flex justify-center">
+                            <input
+                              type="checkbox"
+                              id={`permission-${permission.id}`}
+                              checked={formData.permissions.includes(permission.id)}
+                              onChange={() => handlePermissionChange(permission.id)}
+                              className="h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 dark:border-gray-600 rounded"
+                              disabled={isLoading}
+                            />
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             {errors.permissions && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.permissions}</p>

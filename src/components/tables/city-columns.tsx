@@ -52,20 +52,6 @@ export const createCityColumns = (onEdit?: (city: City) => void, onDelete?: (cit
     },
   },
   {
-    accessorKey: "city_name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          City Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-  },
-  {
     accessorKey: "city_state",
     header: ({ column }) => {
       return (
@@ -74,6 +60,20 @@ export const createCityColumns = (onEdit?: (city: City) => void, onDelete?: (cit
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           State
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+  },
+  {
+    accessorKey: "city_name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          City Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )

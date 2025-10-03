@@ -62,6 +62,12 @@ const TABLE_PERMISSIONS = [
       { id: 'cities:update', label: 'Update' },
       { id: 'cities:delete', label: 'Delete' },
     ]
+  },
+  {
+    table: 'Reports',
+    permissions: [
+      { id: 'reports:read', label: 'Read' },
+    ]
   }
 ];
 
@@ -175,25 +181,61 @@ function AddRoleDialog({ isOpen, onClose }: AddRoleDialogProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Permissions
             </label>
-            <div className="space-y-4">
-              {TABLE_PERMISSIONS.map((tableGroup) => (
-                <div key={tableGroup.table} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-800 dark:text-white mb-2">{tableGroup.table} Table</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {tableGroup.permissions.map((permission) => (
-                      <label key={permission.id} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={permissions.includes(permission.id)}
-                          onChange={(e) => handlePermissionChange(permission.id, e.target.checked)}
-                          className="h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700"
-                        />
-                        <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">{permission.label}</span>
-                      </label>
-                    ))}
-                  </div>
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+              {/* Table Header */}
+              <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <div className="grid grid-cols-5 gap-4 p-3">
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Permission</div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Create</div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Read</div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Update</div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Delete</div>
                 </div>
-              ))}
+              </div>
+              
+              {/* Table Body */}
+              <div className="max-h-64 overflow-y-auto">
+                {TABLE_PERMISSIONS.map((tableGroup) => (
+                  <div key={tableGroup.table} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                    <div className="grid grid-cols-5 gap-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                      {/* Table Name */}
+                      <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                        {tableGroup.table}
+                      </div>
+                      
+                      {/* Permission Checkboxes */}
+                      {tableGroup.table === 'Reports' ? (
+                        // Special handling for Reports - only show checkbox in Read column
+                        <>
+                          <div></div> {/* Create column - empty */}
+                          <div className="flex justify-center"> {/* Read column - checkbox */}
+                            <input
+                              type="checkbox"
+                              checked={permissions.includes('reports:read')}
+                              onChange={(e) => handlePermissionChange('reports:read', e.target.checked)}
+                              className="h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700"
+                            />
+                          </div>
+                          <div></div> {/* Update column - empty */}
+                          <div></div> {/* Delete column - empty */}
+                        </>
+                      ) : (
+                        // Normal handling for other tables
+                        tableGroup.permissions.map((permission) => (
+                          <div key={permission.id} className="flex justify-center">
+                            <input
+                              type="checkbox"
+                              checked={permissions.includes(permission.id)}
+                              onChange={(e) => handlePermissionChange(permission.id, e.target.checked)}
+                              className="h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700"
+                            />
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

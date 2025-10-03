@@ -29,7 +29,7 @@ const Navbar = () => {
     }
   };
   return (
-    <nav className="p-4 flex items-center justify-between sticky top-0 bg-background z-10">
+    <nav className="p-4 flex items-center justify-between sticky top-0 bg-blue-50 dark:bg-background z-10">
       {/* LEFT */}
       <SidebarTrigger />
       {/* <Button variant="outline" onClick={toggleSidebar}>
@@ -70,13 +70,17 @@ const Navbar = () => {
           <DropdownMenuContent sideOffset={10}>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="h-[1.2rem] w-[1.2rem] mr-2" />
-              Profile
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/profile">
+                <User className="h-[1.2rem] w-[1.2rem] mr-2" />
+                Profile
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="h-[1.2rem] w-[1.2rem] mr-2" />
-              Settings
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/change-pass">
+                <Settings className="h-[1.2rem] w-[1.2rem] mr-2" />
+                Change Password
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem variant="destructive" onClick={handleLogout}>
               <LogOut className="h-[1.2rem] w-[1.2rem] mr-2" />

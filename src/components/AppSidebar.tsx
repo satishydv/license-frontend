@@ -73,7 +73,7 @@ const items = [
     permission: "users:read",
   },
   {
-    title: "city",
+    title: "City",
     url: "/dashboard/city",
     icon: Building2,
     permission: "cities:read",
@@ -214,39 +214,41 @@ const AppSidebar = () => {
                 );
               })}
               
-              {/* Reports Collapsible Menu */}
-              <Collapsible className="group/collapsible">
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
-                      <FileText />
-                      <span>Reports</span>
-                      <ChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {reportSubItems.map((subItem) => {
-                        const isSubActive = pathname === subItem.url;
-                        
-                        return (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton 
-                              asChild
-                              className={isSubActive ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg" : ""}
-                            >
-                              <Link href={subItem.url}>
-                                <subItem.icon />
-                                <span>{subItem.title}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        );
-                      })}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
+              {/* Reports Collapsible Menu - Only show if user has reports:read permission */}
+              {hasPermission('reports:read') && (
+                <Collapsible className="group/collapsible">
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton>
+                        <FileText />
+                        <span>Reports</span>
+                        <ChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        {reportSubItems.map((subItem) => {
+                          const isSubActive = pathname === subItem.url;
+                          
+                          return (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton 
+                                asChild
+                                className={isSubActive ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg" : ""}
+                              >
+                                <Link href={subItem.url}>
+                                  <subItem.icon />
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          );
+                        })}
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  </SidebarMenuItem>
+                </Collapsible>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -264,8 +266,12 @@ const AppSidebar = () => {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Account</DropdownMenuItem>
-                <DropdownMenuItem>Setting</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/change-pass">Change Password</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign out
