@@ -69,7 +69,7 @@ export default function UsersPage() {
     <div className="container mx-auto py-10">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Users</h1>
+          <h1 className="text-3xl font-bold text-orange-500">Users</h1>
           <p className="text-muted-foreground">
             Manage and view all users in the system.
           </p>

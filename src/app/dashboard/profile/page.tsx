@@ -5,11 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Phone, Calendar, Shield, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { User, Mail, Phone, Calendar, Shield, Clock, Edit } from 'lucide-react';
 import { format } from 'date-fns';
+import { useState } from 'react';
+import EditProfileDialog from '@/components/dialogs/EditProfileDialog';
 
 export default function ProfilePage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, refreshUser } = useAuth();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const getRoleBadgeColor = (role: string) => {
     switch (role?.toLowerCase()) {
@@ -106,11 +110,22 @@ export default function ProfilePage() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <div>
-                <CardTitle className="text-2xl">Profile Information</CardTitle>
-                <CardDescription>
-                  View your account details and information
-                </CardDescription>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-2xl">Profile Information</CardTitle>
+                  <CardDescription>
+                    View your account details and information
+                  </CardDescription>
+                </div>
+                <Button 
+                  onClick={() => setIsEditDialogOpen(true)}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit Profile
+                </Button>
               </div>
             </CardHeader>
             
@@ -207,6 +222,17 @@ export default function ProfilePage() {
           </Card>
         </div>
       </div>
+
+      {/* Edit Profile Dialog */}
+      <EditProfileDialog
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        user={user}
+        onUpdate={() => {
+          // Refresh user data in context
+          refreshUser();
+        }}
+      />
     </div>
   );
 }

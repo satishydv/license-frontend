@@ -368,6 +368,19 @@ class ApiService {
     }
   }
 
+  async updateProfile(profileData: { name: string; email: string; phone_no?: string }): Promise<User> {
+    const response = await this.request<{ user: ApiUser }>('/profile/update', {
+      method: 'POST',
+      body: JSON.stringify(profileData),
+    });
+
+    if (response.success && response.data) {
+      return convertApiUserToUser(response.data.user);
+    }
+
+    throw new Error(response.message || 'Failed to update profile');
+  }
+
   async getUser(id: number): Promise<User> {
     const response = await this.request<{ user: ApiUser }>(`/users/${id}`);
 

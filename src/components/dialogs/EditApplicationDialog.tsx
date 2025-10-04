@@ -92,6 +92,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
     bloodGroup: '',
     state: '',
     city: '',
+    vendor: '',
     licenseType: '',
     applicationNo: '',
     licenseNo: '',
@@ -104,6 +105,8 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
   })
   const [cities, setCities] = useState<string[]>([])
   const [loadingCities, setLoadingCities] = useState(false)
+  const [vendors, setVendors] = useState<Array<{vendor_id: number, name: string}>>([])
+  const [loadingVendors, setLoadingVendors] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -137,6 +140,11 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
     }
   }, [application])
 
+  // Fetch vendors on component mount
+  useEffect(() => {
+    fetchVendors()
+  }, [])
+
   const fetchCompleteApplication = async (id: number) => {
     try {
       const appData = await apiService.getApplication(id) as Record<string, unknown>
@@ -149,6 +157,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
         bloodGroup: (appData.blood_group as string) || '',
         state: (appData.state as string) || '',
         city: (appData.city as string) || '',
+        vendor: (appData.vendor as string) || '',
         licenseType: (appData.license_type as string) || '',
         applicationNo: (appData.application_no as string) || '',
         licenseNo: (appData.license_no as string) || '',
@@ -206,6 +215,34 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
     }
   }
 
+  const fetchVendors = async () => {
+    setLoadingVendors(true)
+    try {
+      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost/driving-license/index.php/api').replace(/\/$/, '')
+      // Use the public endpoint that doesn't require authentication
+      const response = await fetch(`${apiBase}/vendors/public`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.data && Array.isArray(data.data.vendors)) {
+          setVendors(data.data.vendors.map((vendor: any) => ({
+            vendor_id: vendor.vendor_id,
+            name: vendor.name
+          })))
+        } else {
+          setVendors([])
+        }
+      } else {
+        console.error('Failed to fetch vendors:', response.status, response.statusText)
+        setVendors([])
+      }
+    } catch (error) {
+      console.error('Error fetching vendors:', error)
+      setVendors([])
+    } finally {
+      setLoadingVendors(false)
+    }
+  }
+
   const handleStateChange = (state: string) => {
     handleInputChange('state', state)
     handleInputChange('city', '') // Clear city when state changes
@@ -239,6 +276,9 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
     }
     if (!formData.licenseType) {
       newErrors.licenseType = 'License Type is required'
+    }
+    if (!formData.vendor) {
+      newErrors.vendor = 'Vendor is required'
     }
     if (!formData.applicationNo.trim()) {
       newErrors.applicationNo = 'Application Number is required'
@@ -285,6 +325,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
       payload.append('blood_group', formData.bloodGroup)
       payload.append('state', formData.state)
       payload.append('city', formData.city)
+      payload.append('vendor', formData.vendor)
       payload.append('license_type', formData.licenseType)
       payload.append('application_no', formData.applicationNo)
       payload.append('license_no', formData.licenseNo)
@@ -317,6 +358,7 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
         bloodGroup: '',
         state: '',
         city: '',
+        vendor: '',
         licenseType: '',
         applicationNo: '',
         licenseNo: '',
@@ -367,6 +409,24 @@ export default function EditApplicationDialog({ isOpen, onClose, application, on
                 </SelectContent>
               </Select>
               {errors.licenseType && <p className="text-sm text-red-600 dark:text-red-400">{errors.licenseType}</p>}
+            </div>
+
+            {/* Vendor Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="vendor">Select Vendor *</Label>
+              <Select value={formData.vendor} onValueChange={(value) => handleInputChange('vendor', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder={loadingVendors ? "Loading vendors..." : "Select a vendor"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {vendors.map((vendor) => (
+                    <SelectItem key={vendor.vendor_id} value={vendor.name}>
+                      {vendor.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.vendor && <p className="text-sm text-red-600 dark:text-red-400">{errors.vendor}</p>}
             </div>
 
             {/* Personal Details */}

@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { usePermissions } from "@/contexts/PermissionContext"
 
 type Application = {
   id: number
@@ -35,6 +36,57 @@ type Application = {
   payment_receipt_path: string | null
   created_at: string
   updated_at: string
+}
+
+// Actions cell component that can use hooks
+const ActionsCell = ({ application, onEdit, onDelete, onView }: { 
+  application: Application, 
+  onEdit?: (application: Application) => void, 
+  onDelete?: (application: Application) => void, 
+  onView?: (application: Application) => void 
+}) => {
+  const { hasPermission } = usePermissions()
+  
+  const canEdit = hasPermission('applications:update')
+  const canDelete = hasPermission('applications:delete')
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        {onView && (
+          <DropdownMenuItem onClick={() => onView(application)}>
+            View Details
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem
+          onClick={() => navigator.clipboard.writeText(application.id.toString())}
+        >
+          Copy application ID
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {onEdit && canEdit && (
+          <DropdownMenuItem onClick={() => onEdit(application)}>
+            Edit application
+          </DropdownMenuItem>
+        )}
+        {onDelete && canDelete && (
+          <DropdownMenuItem 
+            className="text-red-600"
+            onClick={() => onDelete(application)}
+          >
+            Delete application
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 export const createApplicationColumns = (onEdit?: (application: Application) => void, onDelete?: (application: Application) => void, onView?: (application: Application) => void): ColumnDef<Application>[] => [
@@ -78,43 +130,13 @@ export const createApplicationColumns = (onEdit?: (application: Application) => 
     size: 80,
     cell: ({ row }) => {
       const application = row.original
-
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            {onView && (
-              <DropdownMenuItem onClick={() => onView(application)}>
-                View Details
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(application.id.toString())}
-            >
-              Copy application ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {onEdit && (
-              <DropdownMenuItem onClick={() => onEdit(application)}>
-                Edit application
-              </DropdownMenuItem>
-            )}
-            {onDelete && (
-              <DropdownMenuItem 
-                className="text-red-600"
-                onClick={() => onDelete(application)}
-              >
-                Delete application
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ActionsCell 
+          application={application} 
+          onEdit={onEdit} 
+          onDelete={onDelete} 
+          onView={onView} 
+        />
       )
     },
   },

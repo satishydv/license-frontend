@@ -69,7 +69,7 @@ export default function RolesPage() {
     <div className="container mx-auto py-10">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Roles</h1>
+          <h1 className="text-3xl font-bold text-orange-500">Roles</h1>
           <p className="text-muted-foreground">
             Manage user roles and permissions.
           </p>
