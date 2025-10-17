@@ -52,6 +52,7 @@ import {
 } from "./ui/collapsible";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePermissions } from "@/contexts/PermissionContext";
+import { useSidebar } from "./ui/sidebar";
 
 const items = [
   {
@@ -158,6 +159,7 @@ const reportSubItems = [
 const AppSidebar = () => {
   const { logout, user } = useAuth();
   const { hasPermission } = usePermissions();
+  const { setOpenMobile, isMobile } = useSidebar();
   const pathname = usePathname();
 
   const handleLogout = async () => {
@@ -165,6 +167,13 @@ const AppSidebar = () => {
       await logout();
     } catch (error) {
       console.error('Logout failed:', error);
+    }
+  };
+
+  const handleMenuClick = () => {
+    // Close mobile sidebar when menu item is clicked
+    if (isMobile) {
+      setOpenMobile(false);
     }
   };
 
@@ -202,7 +211,7 @@ const AppSidebar = () => {
                       asChild 
                       className={isActive ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg" : ""}
                     >
-                      <Link href={item.url}>
+                      <Link href={item.url} onClick={handleMenuClick}>
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>
@@ -236,7 +245,7 @@ const AppSidebar = () => {
                                 asChild
                                 className={isSubActive ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg" : ""}
                               >
-                                <Link href={subItem.url}>
+                                <Link href={subItem.url} onClick={handleMenuClick}>
                                   <subItem.icon />
                                   <span>{subItem.title}</span>
                                 </Link>
@@ -267,10 +276,10 @@ const AppSidebar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/profile">Profile</Link>
+                  <Link href="/dashboard/profile" onClick={handleMenuClick}>Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/change-pass">Change Password</Link>
+                  <Link href="/dashboard/change-pass" onClick={handleMenuClick}>Change Password</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                   <LogOut className="h-4 w-4 mr-2" />

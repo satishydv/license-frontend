@@ -121,7 +121,14 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
       )
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
+      const amountValue = row.getValue("amount");
+      if (amountValue === null || amountValue === undefined || amountValue === '') {
+        return <div className="text-gray-400">-</div>;
+      }
+      const amount = parseFloat(amountValue as string);
+      if (isNaN(amount)) {
+        return <div className="text-gray-400">-</div>;
+      }
       const formatted = new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
@@ -144,7 +151,14 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
       )
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("pay_amount"));
+      const amountValue = row.getValue("pay_amount");
+      if (amountValue === null || amountValue === undefined || amountValue === '') {
+        return <div className="text-gray-400">-</div>;
+      }
+      const amount = parseFloat(amountValue as string);
+      if (isNaN(amount)) {
+        return <div className="text-gray-400">-</div>;
+      }
       const formatted = new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
@@ -168,6 +182,9 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
     },
     cell: ({ row }) => {
       const mode = row.getValue("mode_of_payment") as string;
+      if (mode === null || mode === undefined || mode === '') {
+        return <div className="text-gray-400">-</div>;
+      }
       const modeLabels: Record<string, string> = {
         'cash': 'Cash',
         'upi': 'UPI',
@@ -231,12 +248,6 @@ export const createVendorColumns = (onEdit?: (vendor: Vendor) => void, onDelete?
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(vendor.vendor_id.toString())}
-            >
-              Copy vendor ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             {onEdit && (
               <DropdownMenuItem onClick={() => onEdit(vendor)}>
                 Edit vendor

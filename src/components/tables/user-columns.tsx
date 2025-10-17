@@ -140,12 +140,6 @@ export const createUserColumns = (onEdit?: (user: User) => void, onDelete?: (use
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id.toString())}
-            >
-              Copy user ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             {onEdit && (
               <DropdownMenuItem onClick={() => onEdit(user)}>
                 Edit user

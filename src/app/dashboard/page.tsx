@@ -261,7 +261,7 @@ const DashboardPage = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-bold text-white">{formatCurrency(method.amount)}</div>
-                      <div className="text-xs text-cyan-100">{percentage}%</div>
+                      {/* <div className="text-xs text-cyan-100">{percentage}%</div> */}
                     </div>
                   </div>
                 )

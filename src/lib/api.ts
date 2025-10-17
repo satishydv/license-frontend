@@ -161,7 +161,7 @@ class ApiService {
         } else if (response.status === 403) {
           console.log('🚫 Permission denied - 403 Forbidden');
         }
-        throw new Error(data.message || 'Request failed');
+        throw new Error(data.message || data.error || 'Request failed');
       }
 
       return data;
@@ -823,9 +823,9 @@ class ApiService {
     formData.append('name', vendorData.name);
     formData.append('phone_no', vendorData.phone_no);
     formData.append('address', vendorData.address);
-    formData.append('amount', vendorData.amount.toString());
-    formData.append('pay_amount', vendorData.pay_amount.toString());
-    formData.append('mode_of_payment', vendorData.mode_of_payment);
+    formData.append('amount', vendorData.amount ? vendorData.amount.toString() : '');
+    formData.append('pay_amount', vendorData.pay_amount ? vendorData.pay_amount.toString() : '');
+    formData.append('mode_of_payment', vendorData.mode_of_payment || '');
     formData.append('total_customer', vendorData.total_customer.toString());
     
     if (vendorData.receipt_image_path) {
@@ -860,9 +860,9 @@ class ApiService {
     formData.append('name', vendorData.name);
     formData.append('phone_no', vendorData.phone_no);
     formData.append('address', vendorData.address);
-    formData.append('amount', vendorData.amount.toString());
-    formData.append('pay_amount', vendorData.pay_amount.toString());
-    formData.append('mode_of_payment', vendorData.mode_of_payment);
+    formData.append('amount', vendorData.amount ? vendorData.amount.toString() : '');
+    formData.append('pay_amount', vendorData.pay_amount ? vendorData.pay_amount.toString() : '');
+    formData.append('mode_of_payment', vendorData.mode_of_payment || '');
     formData.append('total_customer', vendorData.total_customer.toString());
     
     if (vendorData.receipt_image_path) {
@@ -959,8 +959,8 @@ class ApiService {
     
     const formData = new FormData();
     formData.append('date', dtoData.date);
-    formData.append('amount', dtoData.amount.toString());
-    formData.append('pay_amount', dtoData.pay_amount.toString());
+    formData.append('amount', dtoData.amount ? dtoData.amount.toString() : '');
+    formData.append('pay_amount', dtoData.pay_amount ? dtoData.pay_amount.toString() : '');
     formData.append('no_of_applicant', dtoData.no_of_applicant.toString());
     
     if (dtoData.receipt) {
@@ -993,8 +993,8 @@ class ApiService {
     const formData = new FormData();
     formData.append('_method', 'PUT'); // Indicate this is an update
     formData.append('date', dtoData.date);
-    formData.append('amount', dtoData.amount.toString());
-    formData.append('pay_amount', dtoData.pay_amount.toString());
+    formData.append('amount', dtoData.amount ? dtoData.amount.toString() : '');
+    formData.append('pay_amount', dtoData.pay_amount ? dtoData.pay_amount.toString() : '');
     formData.append('no_of_applicant', dtoData.no_of_applicant.toString());
     
     if (dtoData.receipt) {

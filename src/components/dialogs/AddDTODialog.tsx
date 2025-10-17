@@ -53,11 +53,13 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
     if (!formData.date) {
       newErrors.date = 'Date is required';
     }
-    if (!formData.amount || parseFloat(formData.amount) < 0) {
-      newErrors.amount = 'Valid amount is required';
+    // Amount is now optional, but if provided, must be valid
+    if (formData.amount && (isNaN(parseFloat(formData.amount)) || parseFloat(formData.amount) < 0)) {
+      newErrors.amount = 'Please enter a valid amount';
     }
-    if (!formData.pay_amount || parseFloat(formData.pay_amount) < 0) {
-      newErrors.pay_amount = 'Valid pay amount is required';
+    // Pay amount is now optional, but if provided, must be valid
+    if (formData.pay_amount && (isNaN(parseFloat(formData.pay_amount)) || parseFloat(formData.pay_amount) < 0)) {
+      newErrors.pay_amount = 'Please enter a valid pay amount';
     }
     if (!formData.no_of_applicant || parseInt(formData.no_of_applicant) < 0) {
       newErrors.no_of_applicant = 'Valid number of applicants is required';
@@ -75,8 +77,8 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
     try {
       const dtoData = {
         date: formData.date,
-        amount: parseFloat(formData.amount),
-        pay_amount: parseFloat(formData.pay_amount),
+        amount: formData.amount ? parseFloat(formData.amount) : null,
+        pay_amount: formData.pay_amount ? parseFloat(formData.pay_amount) : null,
         no_of_applicant: parseInt(formData.no_of_applicant),
         receipt: formData.receipt
       };
@@ -95,7 +97,20 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
       onClose();
     } catch (error: unknown) {
       console.error('Failed to create DTO:', error);
-      setErrors({ submit: error instanceof Error ? error.message : 'Failed to create DTO' });
+      let errorMessage = 'Failed to create DTO';
+      
+      if (error instanceof Error) {
+        // Check if it's a specific API error message
+        if (error.message.includes('Permission denied') || error.message.includes('Forbidden')) {
+          errorMessage = error.message;
+        } else if (error.message !== 'Request failed') {
+          errorMessage = error.message;
+        } else {
+          errorMessage = 'Failed to create DTO. Please check your permissions.';
+        }
+      }
+      
+      setErrors({ submit: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -187,7 +202,7 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Amount *
+                Amount (Optional)
               </label>
               <input
                 type="number"
@@ -200,7 +215,7 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="0.00"
+                placeholder="Enter amount (optional)"
                 disabled={isLoading}
               />
               {errors.amount && (
@@ -210,7 +225,7 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
 
             <div>
               <label htmlFor="pay_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Pay Amount *
+                Pay Amount (Optional)
               </label>
               <input
                 type="number"
@@ -223,7 +238,7 @@ export default function AddDTODialog({ isOpen, onClose }: AddDTODialogProps) {
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.pay_amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="0.00"
+                placeholder="Enter pay amount (optional)"
                 disabled={isLoading}
               />
               {errors.pay_amount && (

@@ -84,7 +84,14 @@ export const createDTOColumns = (onEdit?: (dto: DTO) => void, onDelete?: (dto: D
       )
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
+      const amountValue = row.getValue("amount");
+      if (amountValue === null || amountValue === undefined || amountValue === '') {
+        return <div className="text-gray-400">-</div>;
+      }
+      const amount = parseFloat(amountValue as string);
+      if (isNaN(amount)) {
+        return <div className="text-gray-400">-</div>;
+      }
       const formatted = new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
@@ -106,7 +113,14 @@ export const createDTOColumns = (onEdit?: (dto: DTO) => void, onDelete?: (dto: D
       )
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("pay_amount"));
+      const amountValue = row.getValue("pay_amount");
+      if (amountValue === null || amountValue === undefined || amountValue === '') {
+        return <div className="text-gray-400">-</div>;
+      }
+      const amount = parseFloat(amountValue as string);
+      if (isNaN(amount)) {
+        return <div className="text-gray-400">-</div>;
+      }
       const formatted = new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
@@ -166,12 +180,6 @@ export const createDTOColumns = (onEdit?: (dto: DTO) => void, onDelete?: (dto: D
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(dto.dto_id.toString())}
-            >
-              Copy DTO ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             {onEdit && (
               <DropdownMenuItem onClick={() => onEdit(dto)}>
                 Edit DTO

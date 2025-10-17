@@ -125,6 +125,31 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
     }
   };
 
+  const handleSelectAll = () => {
+    const allPermissions = TABLE_PERMISSIONS.flatMap(tableGroup => 
+      tableGroup.permissions.map(permission => permission.id)
+    );
+    
+    setFormData(prev => {
+      const isAllSelected = allPermissions.every(permission => 
+        prev.permissions.includes(permission)
+      );
+      
+      return {
+        ...prev,
+        permissions: isAllSelected ? [] : allPermissions
+      };
+    });
+    
+    // Clear error when user changes permissions
+    if (errors.permissions) {
+      setErrors(prev => ({
+        ...prev,
+        permissions: ''
+      }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -169,7 +194,50 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
       onClose();
     } catch (error: unknown) {
       console.error('Failed to update role:', error);
-      setErrors({ submit: error instanceof Error ? error.message : 'Failed to update role' });
+      console.log('Full error object:', error);
+      let errorMessage = 'Failed to update role';
+      
+      if (error instanceof Error) {
+        const message = error.message.toLowerCase();
+        console.log('Error message:', error.message);
+        
+        // Check for specific error patterns - expanded list
+        if (message.includes('duplicate') || 
+            message.includes('already exists') || 
+            message.includes('unique constraint') ||
+            message.includes('name already taken') ||
+            message.includes('role name exists') ||
+            message.includes('conflict') ||
+            message.includes('integrity constraint')) {
+          errorMessage = 'A role with this name already exists. Please choose a different name.';
+        } else if (message.includes('name') && message.includes('required')) {
+          errorMessage = 'Role name is required.';
+        } else if (message.includes('permissions') && message.includes('required')) {
+          errorMessage = 'At least one permission is required.';
+        } else if (message.includes('validation failed')) {
+          // For validation failed, let's try to be more specific
+          if (message.includes('name')) {
+            errorMessage = 'Role name validation failed. Please check the name and try again.';
+          } else if (message.includes('permission')) {
+            errorMessage = 'Permission validation failed. Please select at least one permission.';
+          } else {
+            errorMessage = 'Please check all required fields and try again.';
+          }
+        } else if (message.includes('unauthorized') || message.includes('forbidden')) {
+          errorMessage = 'You do not have permission to update roles.';
+        } else if (message.includes('not found') || message.includes('does not exist')) {
+          errorMessage = 'Role not found. It may have been deleted.';
+        } else if (message.includes('network') || message.includes('connection')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (message.includes('server error') || message.includes('internal error')) {
+          errorMessage = 'Server error occurred. Please try again later.';
+        } else if (error.message && error.message !== 'Request failed') {
+          // Show the actual error message if it's not generic
+          errorMessage = error.message;
+        }
+      }
+      
+      setErrors({ submit: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -243,16 +311,28 @@ export default function EditRoleDialog({ isOpen, onClose, role }: EditRoleDialog
               value={formData.description}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white"
               placeholder="Enter role description"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-              Permissions *
-            </label>
+            <div className="flex items-center space-x-2 mb-3">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Permissions *
+              </label>
+              <input
+                type="checkbox"
+                checked={TABLE_PERMISSIONS.flatMap(tableGroup => 
+                  tableGroup.permissions.map(permission => permission.id)
+                ).every(permission => formData.permissions.includes(permission))}
+                onChange={handleSelectAll}
+                className="h-4 w-4 text-yellow-400 focus:ring-yellow-400 border-gray-300 dark:border-gray-600 rounded"
+                disabled={isLoading}
+              />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Select All</span>
+            </div>
             <div className={`border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden ${
               errors.permissions ? 'border-red-300 dark:border-red-500' : ''
             }`}>

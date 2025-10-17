@@ -16,7 +16,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
     address: '',
     amount: '',
     pay_amount: '',
-    mode_of_payment: 'cash' as 'cash' | 'upi' | 'bank-transfer',
+    mode_of_payment: '' as 'cash' | 'upi' | 'bank-transfer' | '',
     total_customer: '',
     receipt_image_path: null as File | null
   });
@@ -25,10 +25,22 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Special handling for phone number to restrict to 10 digits
+    if (name === 'phone_no') {
+      // Remove any non-digit characters and limit to 10 digits
+      const digitsOnly = value.replace(/\D/g, '').slice(0, 10);
+      setFormData(prev => ({
+        ...prev,
+        [name]: digitsOnly
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+    
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -58,15 +70,19 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
     }
     if (!formData.phone_no.trim()) {
       newErrors.phone_no = 'Phone number is required';
+    } else if (formData.phone_no.length !== 10) {
+      newErrors.phone_no = 'Phone number must be exactly 10 digits';
     }
     if (!formData.address.trim()) {
       newErrors.address = 'Address is required';
     }
-    if (!formData.amount || parseFloat(formData.amount) < 0) {
-      newErrors.amount = 'Valid amount is required';
+    // Amount is now optional, but if provided, must be valid
+    if (formData.amount && (isNaN(parseFloat(formData.amount)) || parseFloat(formData.amount) < 0)) {
+      newErrors.amount = 'Please enter a valid amount';
     }
-    if (!formData.pay_amount || parseFloat(formData.pay_amount) < 0) {
-      newErrors.pay_amount = 'Valid pay amount is required';
+    // Pay amount is now optional, but if provided, must be valid
+    if (formData.pay_amount && (isNaN(parseFloat(formData.pay_amount)) || parseFloat(formData.pay_amount) < 0)) {
+      newErrors.pay_amount = 'Please enter a valid pay amount';
     }
     if (!formData.total_customer || parseInt(formData.total_customer) < 0) {
       newErrors.total_customer = 'Valid customer count is required';
@@ -86,9 +102,9 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
         name: formData.name.trim(),
         phone_no: formData.phone_no.trim(),
         address: formData.address.trim(),
-        amount: parseFloat(formData.amount),
-        pay_amount: parseFloat(formData.pay_amount),
-        mode_of_payment: formData.mode_of_payment,
+        amount: formData.amount ? parseFloat(formData.amount) : null,
+        pay_amount: formData.pay_amount ? parseFloat(formData.pay_amount) : null,
+        mode_of_payment: formData.mode_of_payment || null,
         total_customer: parseInt(formData.total_customer),
         receipt_image_path: formData.receipt_image_path
       };
@@ -102,7 +118,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
         address: '',
         amount: '',
         pay_amount: '',
-        mode_of_payment: 'cash',
+        mode_of_payment: '',
         total_customer: '',
         receipt_image_path: null
       });
@@ -124,7 +140,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
         address: '',
         amount: '',
         pay_amount: '',
-        mode_of_payment: 'cash',
+        mode_of_payment: '',
         total_customer: '',
         receipt_image_path: null
       });
@@ -190,10 +206,13 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
                 name="phone_no"
                 value={formData.phone_no}
                 onChange={handleInputChange}
+                maxLength={10}
+                pattern="[0-9]{10}"
+                inputMode="numeric"
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.phone_no ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="Enter phone number"
+                placeholder="Enter 10-digit phone number"
                 disabled={isLoading}
               />
               {errors.phone_no && (
@@ -226,7 +245,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Amount *
+                Amount (Optional)
               </label>
               <input
                 type="number"
@@ -239,7 +258,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="0.00"
+                placeholder="Enter amount (optional)"
                 disabled={isLoading}
               />
               {errors.amount && (
@@ -249,7 +268,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
 
             <div>
               <label htmlFor="pay_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Pay Amount *
+                Pay Amount (Optional)
               </label>
               <input
                 type="number"
@@ -262,7 +281,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.pay_amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="0.00"
+                placeholder="Enter pay amount (optional)"
                 disabled={isLoading}
               />
               {errors.pay_amount && (
@@ -295,7 +314,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
 
           <div>
             <label htmlFor="mode_of_payment" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Mode of Payment *
+              Mode of Payment (Optional)
             </label>
             <select
               id="mode_of_payment"
@@ -305,6 +324,7 @@ export default function AddVendorDialog({ isOpen, onClose }: AddVendorDialogProp
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white"
               disabled={isLoading}
             >
+              <option value="">Select payment mode (optional)</option>
               <option value="cash">Cash</option>
               <option value="upi">UPI</option>
               <option value="bank-transfer">Bank Transfer</option>

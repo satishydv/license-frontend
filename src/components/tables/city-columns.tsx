@@ -95,12 +95,6 @@ export const createCityColumns = (onEdit?: (city: City) => void, onDelete?: (cit
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(city.city_id.toString())}
-            >
-              Copy city ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             {onEdit && (
               <DropdownMenuItem onClick={() => onEdit(city)}>
                 Edit city

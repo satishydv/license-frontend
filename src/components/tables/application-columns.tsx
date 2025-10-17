@@ -65,12 +65,6 @@ const ActionsCell = ({ application, onEdit, onDelete, onView }: {
             View Details
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem
-          onClick={() => navigator.clipboard.writeText(application.id.toString())}
-        >
-          Copy application ID
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
         {onEdit && canEdit && (
           <DropdownMenuItem onClick={() => onEdit(application)}>
             Edit application

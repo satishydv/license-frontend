@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useVendors } from '@/contexts/VendorContext';
 import { Vendor } from '@/types/vendor';
+import { getBaseUrl } from '@/lib/utils';
 
 interface EditVendorDialogProps {
   isOpen: boolean;
@@ -12,13 +13,14 @@ interface EditVendorDialogProps {
 
 export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendorDialogProps) {
   const { updateVendor } = useVendors();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     phone_no: '',
     address: '',
     amount: '',
     pay_amount: '',
-    mode_of_payment: 'cash' as 'cash' | 'upi' | 'bank-transfer',
+    mode_of_payment: '' as 'cash' | 'upi' | 'bank-transfer' | '',
     total_customer: '',
     receipt_image_path: null as File | null
   });
@@ -31,9 +33,9 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
         name: vendor.name,
         phone_no: vendor.phone_no,
         address: vendor.address,
-        amount: vendor.amount.toString(),
-        pay_amount: vendor.pay_amount.toString(),
-        mode_of_payment: vendor.mode_of_payment,
+        amount: vendor.amount ? vendor.amount.toString() : '',
+        pay_amount: vendor.pay_amount ? vendor.pay_amount.toString() : '',
+        mode_of_payment: vendor.mode_of_payment || '',
         total_customer: vendor.total_customer.toString(),
         receipt_image_path: null
       });
@@ -43,10 +45,22 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Special handling for phone number to restrict to 10 digits
+    if (name === 'phone_no') {
+      // Remove any non-digit characters and limit to 10 digits
+      const digitsOnly = value.replace(/\D/g, '').slice(0, 10);
+      setFormData(prev => ({
+        ...prev,
+        [name]: digitsOnly
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+    
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -69,6 +83,18 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
     }
   };
 
+  const handleChooseFile = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleViewCurrent = () => {
+    if (vendor?.receipt_image_path) {
+      const baseUrl = getBaseUrl();
+      const imageUrl = `${baseUrl}/public/payment/${vendor.receipt_image_path}`;
+      window.open(imageUrl, '_blank');
+    }
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) {
@@ -76,15 +102,19 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
     }
     if (!formData.phone_no.trim()) {
       newErrors.phone_no = 'Phone number is required';
+    } else if (formData.phone_no.length !== 10) {
+      newErrors.phone_no = 'Phone number must be exactly 10 digits';
     }
     if (!formData.address.trim()) {
       newErrors.address = 'Address is required';
     }
-    if (!formData.amount || parseFloat(formData.amount) < 0) {
-      newErrors.amount = 'Valid amount is required';
+    // Amount is now optional, but if provided, must be valid
+    if (formData.amount && (isNaN(parseFloat(formData.amount)) || parseFloat(formData.amount) < 0)) {
+      newErrors.amount = 'Please enter a valid amount';
     }
-    if (!formData.pay_amount || parseFloat(formData.pay_amount) < 0) {
-      newErrors.pay_amount = 'Valid pay amount is required';
+    // Pay amount is now optional, but if provided, must be valid
+    if (formData.pay_amount && (isNaN(parseFloat(formData.pay_amount)) || parseFloat(formData.pay_amount) < 0)) {
+      newErrors.pay_amount = 'Please enter a valid pay amount';
     }
     if (!formData.total_customer || parseInt(formData.total_customer) < 0) {
       newErrors.total_customer = 'Valid customer count is required';
@@ -106,9 +136,9 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
         name: formData.name.trim(),
         phone_no: formData.phone_no.trim(),
         address: formData.address.trim(),
-        amount: parseFloat(formData.amount),
-        pay_amount: parseFloat(formData.pay_amount),
-        mode_of_payment: formData.mode_of_payment,
+        amount: formData.amount ? parseFloat(formData.amount) : null,
+        pay_amount: formData.pay_amount ? parseFloat(formData.pay_amount) : null,
+        mode_of_payment: formData.mode_of_payment || null,
         total_customer: parseInt(formData.total_customer),
         receipt_image_path: formData.receipt_image_path
       };
@@ -122,7 +152,7 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
         address: '',
         amount: '',
         pay_amount: '',
-        mode_of_payment: 'cash',
+        mode_of_payment: '',
         total_customer: '',
         receipt_image_path: null
       });
@@ -144,7 +174,7 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
         address: '',
         amount: '',
         pay_amount: '',
-        mode_of_payment: 'cash',
+        mode_of_payment: '',
         total_customer: '',
         receipt_image_path: null
       });
@@ -210,10 +240,13 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
                 name="phone_no"
                 value={formData.phone_no}
                 onChange={handleInputChange}
+                maxLength={10}
+                pattern="[0-9]{10}"
+                inputMode="numeric"
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.phone_no ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="Enter phone number"
+                placeholder="Enter 10-digit phone number"
                 disabled={isLoading}
               />
               {errors.phone_no && (
@@ -246,7 +279,7 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Amount *
+                Amount (Optional)
               </label>
               <input
                 type="number"
@@ -259,7 +292,7 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="0.00"
+                placeholder="Enter amount (optional)"
                 disabled={isLoading}
               />
               {errors.amount && (
@@ -269,7 +302,7 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
 
             <div>
               <label htmlFor="pay_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Pay Amount *
+                Pay Amount (Optional)
               </label>
               <input
                 type="number"
@@ -282,7 +315,7 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.pay_amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="0.00"
+                placeholder="Enter pay amount (optional)"
                 disabled={isLoading}
               />
               {errors.pay_amount && (
@@ -315,16 +348,17 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
 
           <div>
             <label htmlFor="mode_of_payment" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Mode of Payment *
+              Mode of Payment (Optional)
             </label>
             <select
               id="mode_of_payment"
               name="mode_of_payment"
               value={formData.mode_of_payment}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white"
               disabled={isLoading}
             >
+              <option value="">Select payment mode (optional)</option>
               <option value="cash">Cash</option>
               <option value="upi">UPI</option>
               <option value="bank-transfer">Bank Transfer</option>
@@ -335,25 +369,45 @@ export default function EditVendorDialog({ isOpen, onClose, vendor }: EditVendor
             <label htmlFor="receipt_image_path" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Receipt Image (Optional)
             </label>
+            {/* Hidden input, triggered by Update button */}
             <input
+              ref={fileInputRef}
               type="file"
               id="receipt_image_path"
               name="receipt_image_path"
               onChange={handleFileChange}
               accept="image/*,.pdf"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              className="hidden"
               disabled={isLoading}
             />
-            {formData.receipt_image_path && (
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Selected: {formData.receipt_image_path.name}
-              </p>
-            )}
-            {vendor.receipt_image_path && !formData.receipt_image_path && (
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Current: {vendor.receipt_image_path}
-              </p>
-            )}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleViewCurrent}
+                disabled={!vendor?.receipt_image_path}
+                className={`px-3 py-2 text-sm rounded-md border ${vendor?.receipt_image_path ? 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-white' : 'opacity-50 cursor-not-allowed'}`}
+              >
+                View
+              </button>
+              <button
+                type="button"
+                onClick={handleChooseFile}
+                disabled={isLoading}
+                className="px-3 py-2 text-sm rounded-md bg-yellow-400 hover:bg-yellow-500 text-gray-900"
+              >
+                Update
+              </button>
+              {formData.receipt_image_path && (
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Selected: {formData.receipt_image_path.name}
+                </span>
+              )}
+              {!formData.receipt_image_path && vendor?.receipt_image_path && (
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Current: {vendor.receipt_image_path}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">

@@ -84,9 +84,13 @@ const DrivingLicenseApplicationForm = () => {
   const [vendors, setVendors] = useState<Array<{vendor_id: number, name: string}>>([])
   const [loadingVendors, setLoadingVendors] = useState(false)
 
-  // simple toast state
+  // enhanced toast state
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
+  const [toastType, setToastType] = useState<'success' | 'error'>('success')
+  
+  // validation state
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (!showToast) return
@@ -95,10 +99,28 @@ const DrivingLicenseApplicationForm = () => {
   }, [showToast])
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
+    // Special handling for contact number to restrict to 10 digits
+    if (field === 'contactNo') {
+      // Remove any non-digit characters and limit to 10 digits
+      const digitsOnly = value.replace(/\D/g, '').slice(0, 10)
+      setFormData(prev => ({
+        ...prev,
+        [field]: digitsOnly
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [field]: value
+      }))
+    }
+    
+    // Clear error when user starts typing/selecting
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }))
+    }
   }
 
   const fetchCities = useCallback(async (state: string) => {
@@ -234,8 +256,63 @@ const DrivingLicenseApplicationForm = () => {
     }
   }
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    // Required text fields
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required'
+    }
+    if (!formData.fatherName.trim()) {
+      newErrors.fatherName = 'Father name is required'
+    }
+    if (!formData.contactNo.trim()) {
+      newErrors.contactNo = 'Contact number is required'
+    } else if (formData.contactNo.length < 10) {
+      newErrors.contactNo = 'Contact number must be 10 digits'
+    }
+    if (!formData.dob) {
+      newErrors.dob = 'Date of birth is required'
+    }
+    if (!formData.licenseNo.trim()) {
+      newErrors.licenseNo = 'License number is required'
+    }
+    if (!formData.issueDate) {
+      newErrors.issueDate = 'Issue date is required'
+    }
+    if (!formData.expiryDate) {
+      newErrors.expiryDate = 'Expiry date is required'
+    }
+
+    // Required dropdown fields
+    if (!formData.licenseType) {
+      newErrors.licenseType = 'Please select a license type'
+    }
+    if (!formData.bloodGroup) {
+      newErrors.bloodGroup = 'Please select a blood group'
+    }
+    if (!formData.state) {
+      newErrors.state = 'Please select a state'
+    }
+    if (!formData.city) {
+      newErrors.city = 'Please select a city'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate form before submission
+    if (!validateForm()) {
+      setToastMessage('❌ Please fill in all required fields')
+      setToastType('error')
+      setShowToast(true)
+      return
+    }
+    
     const payload = new FormData()
     payload.append('name', formData.name)
     payload.append('father_name', formData.fatherName)
@@ -259,7 +336,8 @@ const DrivingLicenseApplicationForm = () => {
 
     try {
       await apiService.createApplication(payload)
-      setToastMessage('Application submitted successfully')
+      setToastMessage('Application submitted successfully! 🎉')
+      setToastType('success')
       setShowToast(true)
 
       // reset form for a fresh start
@@ -285,9 +363,33 @@ const DrivingLicenseApplicationForm = () => {
       setUploadedFile(null)
       setPaymentReceiptFile(null)
       setCities([])
-    } catch (error) {
+      setLoadedState('') // Reset loaded state to allow cities to be fetched again
+      setErrors({}) // Clear validation errors
+    } catch (error: any) {
       console.error('Failed to submit application:', error)
-      setToastMessage('Failed to submit application')
+      
+      // Extract error message from API response
+      let errorMessage = 'Failed to submit application'
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error?.message) {
+        errorMessage = error.message
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      }
+      
+      // Add more specific error handling
+      if (errorMessage.includes('Validation failed')) {
+        errorMessage = 'Please check all required fields and try again'
+      } else if (errorMessage.includes('Database')) {
+        errorMessage = 'Database error occurred. Please try again later'
+      } else if (errorMessage.includes('Network')) {
+        errorMessage = 'Network error. Please check your connection'
+      }
+      
+      setToastMessage(`❌ ${errorMessage}`)
+      setToastType('error')
       setShowToast(true)
     }
   }
@@ -316,7 +418,7 @@ const DrivingLicenseApplicationForm = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Vendor Selection */}
                 <div className="space-y-2">
-                  <Label htmlFor="vendor">Select Vendor *</Label>
+                  <Label htmlFor="vendor">Select Vendor</Label>
                   <Select value={formData.vendor} onValueChange={(value) => handleInputChange('vendor', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder={loadingVendors ? "Loading vendors..." : "Select a vendor"} />
@@ -335,7 +437,7 @@ const DrivingLicenseApplicationForm = () => {
                 <div className="space-y-2">
                   <Label htmlFor="licenseType">Type of License *</Label>
                   <Select value={formData.licenseType} onValueChange={(value) => handleInputChange('licenseType', value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className={errors.licenseType ? 'border-red-500 focus:border-red-500' : ''}>
                       <SelectValue placeholder="Select type of license" />
                     </SelectTrigger>
                     <SelectContent>
@@ -345,6 +447,9 @@ const DrivingLicenseApplicationForm = () => {
                       <SelectItem value="correction">Correction</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.licenseType && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.licenseType}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -364,8 +469,12 @@ const DrivingLicenseApplicationForm = () => {
                     placeholder="Enter your full name"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
+                    className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  {errors.name && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.name}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -376,8 +485,12 @@ const DrivingLicenseApplicationForm = () => {
                     placeholder="Enter father's name"
                     value={formData.fatherName}
                     onChange={(e) => handleInputChange('fatherName', e.target.value)}
+                    className={errors.fatherName ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  {errors.fatherName && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.fatherName}</p>
+                  )}
                 </div>
               </div>
 
@@ -388,11 +501,22 @@ const DrivingLicenseApplicationForm = () => {
                   <Input
                     id="contactNo"
                     type="tel"
-                    placeholder="Enter contact number"
+                    placeholder="Enter 10-digit contact number"
                     value={formData.contactNo}
                     onChange={(e) => handleInputChange('contactNo', e.target.value)}
+                    maxLength={10}
+                    pattern="[0-9]{10}"
+                    inputMode="numeric"
+                    className={errors.contactNo ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  {errors.contactNo ? (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.contactNo}</p>
+                  ) : formData.contactNo && formData.contactNo.length < 10 ? (
+                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                      {10 - formData.contactNo.length} more digits required
+                    </p>
+                  ) : null}
                 </div>
 
                 <div className="space-y-2">
@@ -402,14 +526,18 @@ const DrivingLicenseApplicationForm = () => {
                     type="date"
                     value={formData.dob}
                     onChange={(e) => handleInputChange('dob', e.target.value)}
+                    className={errors.dob ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  {errors.dob && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.dob}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="bloodGroup">Blood Group *</Label>
                   <Select value={formData.bloodGroup} onValueChange={(value) => handleInputChange('bloodGroup', value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className={errors.bloodGroup ? 'border-red-500 focus:border-red-500' : ''}>
                       <SelectValue placeholder="Select blood group" />
                     </SelectTrigger>
                     <SelectContent>
@@ -423,6 +551,9 @@ const DrivingLicenseApplicationForm = () => {
                       <SelectItem value="O-">O-</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.bloodGroup && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.bloodGroup}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -437,7 +568,7 @@ const DrivingLicenseApplicationForm = () => {
                 <div className="space-y-2">
                   <Label htmlFor="state">State *</Label>
                   <Select value={formData.state} onValueChange={handleStateChange}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className={`w-full ${errors.state ? 'border-red-500 focus:border-red-500' : ''}`}>
                       <SelectValue placeholder="Select your state" />
                     </SelectTrigger>
                     <SelectContent>
@@ -448,6 +579,9 @@ const DrivingLicenseApplicationForm = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.state && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.state}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -457,7 +591,7 @@ const DrivingLicenseApplicationForm = () => {
                     onValueChange={(value) => handleInputChange('city', value)}
                     disabled={!formData.state || loadingCities}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className={`w-full ${errors.city ? 'border-red-500 focus:border-red-500' : ''}`}>
                       <SelectValue placeholder={
                         !formData.state 
                           ? "Select state first" 
@@ -474,6 +608,9 @@ const DrivingLicenseApplicationForm = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.city && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.city}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -499,14 +636,13 @@ const DrivingLicenseApplicationForm = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="coverClass">Cover/Class *</Label>
+                  <Label htmlFor="coverClass">Cover/Class</Label>
                   <Input
                     id="coverClass"
                     type="text"
                     placeholder="Enter cover/class"
                     value={formData.coverClass}
                     onChange={(e) => handleInputChange('coverClass', e.target.value)}
-                    required
                   />
                 </div>
               </div>
@@ -520,8 +656,12 @@ const DrivingLicenseApplicationForm = () => {
                     placeholder="Enter license number"
                     value={formData.licenseNo}
                     onChange={(e) => handleInputChange('licenseNo', e.target.value)}
+                    className={errors.licenseNo ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  {errors.licenseNo && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.licenseNo}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -531,8 +671,12 @@ const DrivingLicenseApplicationForm = () => {
                     type="date"
                     value={formData.issueDate}
                     onChange={(e) => handleInputChange('issueDate', e.target.value)}
+                    className={errors.issueDate ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  {errors.issueDate && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.issueDate}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -542,8 +686,12 @@ const DrivingLicenseApplicationForm = () => {
                     type="date"
                     value={formData.expiryDate}
                     onChange={(e) => handleInputChange('expiryDate', e.target.value)}
+                    className={errors.expiryDate ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  {errors.expiryDate && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.expiryDate}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -706,11 +854,29 @@ const DrivingLicenseApplicationForm = () => {
         </div>
       </div>
 
-      {/* Toast */}
+      {/* Enhanced Toast */}
       {showToast && (
         <div className="fixed bottom-6 right-6 z-50">
-          <div className="bg-card text-card-foreground border px-4 py-3 rounded shadow-lg">
-            <span className="text-sm">{toastMessage}</span>
+          <div className={`
+            px-4 py-3 rounded-lg shadow-lg border-2 max-w-md
+            ${toastType === 'success' 
+              ? 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-200' 
+              : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200'
+            }
+            animate-in slide-in-from-right-full duration-300
+          `}>
+            <div className="flex items-center gap-2">
+              {toastType === 'success' ? (
+                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">✓</span>
+                </div>
+              ) : (
+                <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">✕</span>
+                </div>
+              )}
+              <span className="text-sm font-medium">{toastMessage}</span>
+            </div>
           </div>
         </div>
       )}

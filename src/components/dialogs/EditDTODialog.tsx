@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDTOs } from '@/contexts/DTOContext';
 import { DTO } from '@/types/dto';
+import { getBaseUrl } from '@/lib/utils';
 
 interface EditDTODialogProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface EditDTODialogProps {
 
 export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogProps) {
   const { updateDTO } = useDTOs();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [formData, setFormData] = useState({
     date: '',
     amount: '',
@@ -26,8 +28,8 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
     if (dto) {
       setFormData({
         date: dto.date,
-        amount: dto.amount.toString(),
-        pay_amount: dto.pay_amount.toString(),
+        amount: dto.amount ? dto.amount.toString() : '',
+        pay_amount: dto.pay_amount ? dto.pay_amount.toString() : '',
         no_of_applicant: dto.no_of_applicant.toString(),
         receipt: null
       });
@@ -63,16 +65,30 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
     }
   };
 
+  const handleChooseFile = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleViewCurrent = () => {
+    if (dto?.receipt) {
+      const baseUrl = getBaseUrl();
+      const imageUrl = `${baseUrl}/public/payment/${dto.receipt}`;
+      window.open(imageUrl, '_blank');
+    }
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.date) {
       newErrors.date = 'Date is required';
     }
-    if (!formData.amount || parseFloat(formData.amount) < 0) {
-      newErrors.amount = 'Valid amount is required';
+    // Amount is now optional, but if provided, must be valid
+    if (formData.amount && (isNaN(parseFloat(formData.amount)) || parseFloat(formData.amount) < 0)) {
+      newErrors.amount = 'Please enter a valid amount';
     }
-    if (!formData.pay_amount || parseFloat(formData.pay_amount) < 0) {
-      newErrors.pay_amount = 'Valid pay amount is required';
+    // Pay amount is now optional, but if provided, must be valid
+    if (formData.pay_amount && (isNaN(parseFloat(formData.pay_amount)) || parseFloat(formData.pay_amount) < 0)) {
+      newErrors.pay_amount = 'Please enter a valid pay amount';
     }
     if (!formData.no_of_applicant || parseInt(formData.no_of_applicant) < 0) {
       newErrors.no_of_applicant = 'Valid number of applicants is required';
@@ -92,8 +108,8 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
     try {
       const dtoData = {
         date: formData.date,
-        amount: parseFloat(formData.amount),
-        pay_amount: parseFloat(formData.pay_amount),
+        amount: formData.amount ? parseFloat(formData.amount) : null,
+        pay_amount: formData.pay_amount ? parseFloat(formData.pay_amount) : null,
         no_of_applicant: parseInt(formData.no_of_applicant),
         receipt: formData.receipt
       };
@@ -112,7 +128,20 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
       onClose();
     } catch (error: unknown) {
       console.error('Failed to update DTO:', error);
-      setErrors({ submit: error instanceof Error ? error.message : 'Failed to update DTO' });
+      let errorMessage = 'Failed to update DTO';
+      
+      if (error instanceof Error) {
+        // Check if it's a specific API error message
+        if (error.message.includes('Permission denied') || error.message.includes('Forbidden')) {
+          errorMessage = error.message;
+        } else if (error.message !== 'Request failed') {
+          errorMessage = error.message;
+        } else {
+          errorMessage = 'Failed to update DTO. Please check your permissions.';
+        }
+      }
+      
+      setErrors({ submit: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -204,7 +233,7 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Amount *
+                Amount (Optional)
               </label>
               <input
                 type="number"
@@ -217,7 +246,7 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="0.00"
+                placeholder="Enter amount (optional)"
                 disabled={isLoading}
               />
               {errors.amount && (
@@ -227,7 +256,7 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
 
             <div>
               <label htmlFor="pay_amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Pay Amount *
+                Pay Amount (Optional)
               </label>
               <input
                 type="number"
@@ -240,7 +269,7 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   errors.pay_amount ? 'border-red-300 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="0.00"
+                placeholder="Enter pay amount (optional)"
                 disabled={isLoading}
               />
               {errors.pay_amount && (
@@ -253,25 +282,45 @@ export default function EditDTODialog({ isOpen, onClose, dto }: EditDTODialogPro
             <label htmlFor="receipt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Receipt Image (Optional)
             </label>
+            {/* Hidden input, triggered by Update button */}
             <input
+              ref={fileInputRef}
               type="file"
               id="receipt"
               name="receipt"
               onChange={handleFileChange}
               accept="image/*,.pdf"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+              className="hidden"
               disabled={isLoading}
             />
-            {formData.receipt && (
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Selected: {formData.receipt.name}
-              </p>
-            )}
-            {dto.receipt && !formData.receipt && (
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Current: {dto.receipt}
-              </p>
-            )}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleViewCurrent}
+                disabled={!dto?.receipt}
+                className={`px-3 py-2 text-sm rounded-md border ${dto?.receipt ? 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-white' : 'opacity-50 cursor-not-allowed'}`}
+              >
+                View
+              </button>
+              <button
+                type="button"
+                onClick={handleChooseFile}
+                disabled={isLoading}
+                className="px-3 py-2 text-sm rounded-md bg-yellow-400 hover:bg-yellow-500 text-gray-900"
+              >
+                Update
+              </button>
+              {formData.receipt && (
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Selected: {formData.receipt.name}
+                </span>
+              )}
+              {!formData.receipt && dto?.receipt && (
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Current: {dto.receipt}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">

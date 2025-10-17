@@ -123,12 +123,6 @@ export const createRoleColumns = (onEdit?: (role: Role) => void, onDelete?: (rol
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(role.id.toString())}
-            >
-              Copy role ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             {onEdit && (
               <DropdownMenuItem onClick={() => onEdit(role)}>
                 Edit role
